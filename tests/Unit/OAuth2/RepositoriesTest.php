@@ -16,6 +16,25 @@ class RepositoriesTest extends TestCase
         $this->assertFalse($repo->validateClient('unknown', 'secret', 'client_credentials'));
     }
 
+    public function testValidateClientReturnsFalseForWrongSecret(): void
+    {
+        // Simulate DB returning a row with a bcrypt-hashed password for an active client.
+        // Passing the wrong plaintext must make password_verify() return false.
+        \Db::$nextRow = ['client_secret' => password_hash('correct_secret', PASSWORD_BCRYPT)];
+        $repo = new ClientRepository();
+        $this->assertFalse($repo->validateClient('test_client', 'wrong_secret', 'client_credentials'));
+    }
+
+    public function testValidateClientReturnsFalseForInactiveClient(): void
+    {
+        // The SQL query has AND active = 1. An inactive client produces no row.
+        // Db::$nextRow is false by default — simulates the SQL finding no active row.
+        // Reset explicitly for clarity.
+        \Db::$nextRow = false;
+        $repo = new ClientRepository();
+        $this->assertFalse($repo->validateClient('inactive_client', 'any_secret', 'client_credentials'));
+    }
+
     public function testScopeRepositoryReturnsNullForUnknownScope(): void
     {
         $repo = new ScopeRepository();
