@@ -1,0 +1,61 @@
+{
+  "planPath": "docs/superpowers/plans/2026-05-27-prestashop-admin-api-infrastructure.md",
+  "tasks": [
+    {
+      "id": 2,
+      "subject": "Task 1: Module scaffold + SQL + routing",
+      "status": "pending",
+      "description": "**Goal:** Créer le module PrestaShop avec installation/désinstallation, génération des clés RSA, et routage via hookModuleRoutes().\n\n**Files:**\n- Create: `apimodule.php`\n- Create: `composer.json`\n- Create: `sql/install.sql`\n- Create: `sql/uninstall.sql`\n- Create: `var/keys/.gitkeep`\n\n**Verify:** `composer validate && php -l apimodule.php`\n\n```json:metadata\n{\"files\":[\"apimodule.php\",\"composer.json\",\"sql/install.sql\",\"sql/uninstall.sql\"],\"verifyCommand\":\"composer validate && php -l apimodule.php\",\"acceptanceCriteria\":[\"composer install sans erreur\",\"module installable PS 1.7.6+\",\"tables SQL créées\",\"clés RSA générées et protégées\",\"encryption key dans Configuration\"]}\n```"
+    },
+    {
+      "id": 3,
+      "subject": "Task 2: OAuth2 entités et repositories",
+      "status": "pending",
+      "blockedBy": [2],
+      "description": "**Goal:** Implémenter les entités PSR et repositories DB pour league/oauth2-server.\n\n**Files:**\n- Create: `src/OAuth2/Entity/ClientEntity.php`\n- Create: `src/OAuth2/Entity/ScopeEntity.php`\n- Create: `src/OAuth2/Entity/AccessTokenEntity.php`\n- Create: `src/OAuth2/Repository/ClientRepository.php`\n- Create: `src/OAuth2/Repository/ScopeRepository.php`\n- Create: `src/OAuth2/Repository/AccessTokenRepository.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox`\n\n```json:metadata\n{\"files\":[\"src/OAuth2/Entity/ClientEntity.php\",\"src/OAuth2/Entity/ScopeEntity.php\",\"src/OAuth2/Entity/AccessTokenEntity.php\",\"src/OAuth2/Repository/ClientRepository.php\",\"src/OAuth2/Repository/ScopeRepository.php\",\"src/OAuth2/Repository/AccessTokenRepository.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"validateClient false pour secret incorrect\",\"validateClient false pour client inactif\",\"getScopeEntityByIdentifier null pour scope inconnu\",\"isAccessTokenRevoked false pour token inconnu\"]}\n```"
+    },
+    {
+      "id": 4,
+      "subject": "Task 3: OAuth2 serveurs et endpoint token",
+      "status": "pending",
+      "blockedBy": [3],
+      "description": "**Goal:** Câbler AuthorizationServer et ResourceServer, implémenter POST /admin-api/access_token.\n\n**Files:**\n- Create: `src/OAuth2/AuthorizationServer.php`\n- Create: `src/OAuth2/ResourceServer.php`\n- Create: `controllers/front/api.php`\n\n**Verify:** `curl -X POST http://localhost/admin-api/access_token -F 'grant_type=client_credentials' -F 'client_id=test' -F 'client_secret=wrong'` → HTTP 401\n\n```json:metadata\n{\"files\":[\"src/OAuth2/AuthorizationServer.php\",\"src/OAuth2/ResourceServer.php\",\"controllers/front/api.php\"],\"verifyCommand\":\"curl -X POST http://localhost/admin-api/access_token -F 'grant_type=client_credentials' -F 'client_id=test' -F 'client_secret=wrong'\",\"acceptanceCriteria\":[\"POST access_token valide → 200 + JWT\",\"POST access_token mauvais secret → 401\",\"GET sans Authorization → 401\"]}\n```"
+    },
+    {
+      "id": 5,
+      "subject": "Task 4: HTTP core — Request, Response, ShopContextResolver, Dispatcher",
+      "status": "pending",
+      "blockedBy": [4],
+      "description": "**Goal:** Implémenter la couche HTTP (Request, Response, ShopContextResolver, Dispatcher).\n\n**Files:**\n- Create: `src/Exception/ResourceNotFoundException.php`\n- Create: `src/Exception/ValidationException.php`\n- Create: `src/Api/Request.php`\n- Create: `src/Api/Response.php`\n- Create: `src/Api/ShopContextResolver.php`\n- Create: `src/Api/Dispatcher.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/DispatcherTest.php --testdox`\n\n```json:metadata\n{\"files\":[\"src/Api/Request.php\",\"src/Api/Response.php\",\"src/Api/ShopContextResolver.php\",\"src/Api/Dispatcher.php\",\"src/Exception/ResourceNotFoundException.php\",\"src/Exception/ValidationException.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/DispatcherTest.php --testdox\",\"acceptanceCriteria\":[\"401 sans token\",\"403 scope insuffisant\",\"400 multistore sans param shop\",\"format erreur PS9\"]}\n```"
+    },
+    {
+      "id": 6,
+      "subject": "Task 5: ResourceInterface + AbstractResource + ResourceRegistry",
+      "status": "pending",
+      "blockedBy": [5],
+      "description": "**Goal:** Définir le contrat des ressources, la classe de base avec helpers, et le registry de routing.\n\n**Files:**\n- Create: `src/Resource/ResourceInterface.php`\n- Create: `src/Resource/AbstractResource.php`\n- Create: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ResourceRegistryTest.php --testdox` (après Task 6)\n\n```json:metadata\n{\"files\":[\"src/Resource/ResourceInterface.php\",\"src/Resource/AbstractResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ResourceRegistryTest.php --testdox\",\"acceptanceCriteria\":[\"resolve collection\",\"resolve item avec id\",\"resolve bulk-delete\",\"scopeExists retourne true\",\"getLocalizedField convertit les langues\"]}\n```"
+    },
+    {
+      "id": 7,
+      "subject": "Task 6: ContactResource — preuve E2E",
+      "status": "pending",
+      "blockedBy": [6],
+      "description": "**Goal:** Implémenter la ressource Contact complète (CRUD + bulk delete) — ressource canonique E2E.\n\n**Files:**\n- Create: `src/Resource/Contact/ContactResource.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ResourceRegistryTest.php --testdox` → 7 tests PASS\n\n```json:metadata\n{\"files\":[\"src/Resource/Contact/ContactResource.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ResourceRegistryTest.php --testdox\",\"acceptanceCriteria\":[\"GET list 200\",\"GET item 200\",\"POST sans names → 422\",\"POST valide → 201\",\"PATCH → 200\",\"DELETE → 204\",\"bulk-delete → 204\"]}\n```"
+    },
+    {
+      "id": 8,
+      "subject": "Task 7: Back-office — gestion des clients API",
+      "status": "pending",
+      "blockedBy": [2],
+      "description": "**Goal:** Créer l'onglet d'administration pour gérer les clients API.\n\n**Files:**\n- Create: `controllers/admin/AdminApimoduleClientController.php`\n- Create: `src/Model/ApimoduleClient.php`\n\n**Verify:** Navigation manuelle dans le back-office PS → Administration > API Manager\n\n```json:metadata\n{\"files\":[\"controllers/admin/AdminApimoduleClientController.php\",\"src/Model/ApimoduleClient.php\"],\"verifyCommand\":\"Navigation manuelle back-office\",\"acceptanceCriteria\":[\"onglet visible\",\"liste clients\",\"création avec secret bcrypt\",\"secret affiché une seule fois\",\"scopes par domaine\"]}\n```"
+    },
+    {
+      "id": 9,
+      "subject": "Task 8: Tests d'intégration E2E (Contact)",
+      "status": "pending",
+      "blockedBy": [7],
+      "description": "**Goal:** Valider le pipeline complet avec une suite de tests d'intégration sur l'endpoint Contact.\n\n**Files:**\n- Create: `tests/Integration/ApiTestCase.php`\n- Create: `tests/Integration/ContactEndpointTest.php`\n- Create: `phpunit.xml`\n\n**Verify:** `PS_ROOT=/var/www/prestashop API_BASE_URL=http://localhost vendor/bin/phpunit tests/Integration/ContactEndpointTest.php --testdox`\n\n```json:metadata\n{\"files\":[\"tests/Integration/ApiTestCase.php\",\"tests/Integration/ContactEndpointTest.php\",\"phpunit.xml\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Integration/ContactEndpointTest.php --testdox\",\"acceptanceCriteria\":[\"GET list 200\",\"POST 201\",\"GET 200\",\"PATCH 200\",\"DELETE 204\",\"sans token 401\",\"mauvais scope 403\"]}\n```"
+    }
+  ],
+  "lastUpdated": "2026-05-27T00:00:00Z"
+}
