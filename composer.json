@@ -1,0 +1,33 @@
+{
+    "name": "prestaedit/apimodule",
+    "description": "PrestaShop Admin API — port of ps_apiresources for PS 1.7+",
+    "type": "prestashop-module",
+    "license": "AFL-3.0",
+    "require": {
+        "php": ">=7.4",
+        "league/oauth2-server": "^8.5",
+        "nyholm/psr7": "^1.8",
+        "nyholm/psr7-server": "^1.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PrestaEdit\\ApiModule\\": "src/"
+        },
+        "classmap": [
+            "apimodule.php",
+            "controllers/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PrestaEdit\\ApiModule\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "prepend-autoloader": false
+    }
+}
