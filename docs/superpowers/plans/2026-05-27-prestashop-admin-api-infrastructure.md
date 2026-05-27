@@ -1497,14 +1497,16 @@ abstract class AbstractResource
         $query->orderBy("{$column} {$p['sortOrder']}");
     }
 
-    /** Compte le total d'une DbQuery (sans LIMIT) */
+    /**
+     * Compte le total d'une DbQuery via sous-requête.
+     * N'utilise PAS clone + select() car DbQuery::select() appende au lieu de remplacer.
+     */
     protected function countQuery(\DbQuery $query): int
     {
-        $countQuery = clone $query;
-        $countQuery->select('COUNT(*) AS total');
-        // Réinitialise SELECT si multiple
-        $row = \Db::getInstance()->getRow($countQuery);
-        return (int) ($row['total'] ?? 0);
+        $row = \Db::getInstance()->getRow(
+            'SELECT COUNT(*) AS n FROM (' . $query->build() . ') AS subcount'
+        );
+        return (int) ($row['n'] ?? 0);
     }
 
     /**
@@ -1854,7 +1856,7 @@ class ContactResource extends AbstractResource implements ResourceInterface
         $q->select('c.id_contact, c.email, c.customer_service');
         $q->from('contact', 'c');
 
-        $total = $this->countFromQuery($q);
+        $total = $this->countQuery($q);
 
         $this->applySort($q, $filters, 'c.id_contact', [
             'contactId'       => 'c.id_contact',
@@ -1973,15 +1975,6 @@ class ContactResource extends AbstractResource implements ResourceInterface
         ];
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────────
-
-    private function countFromQuery(\DbQuery $q): int
-    {
-        $count = clone $q;
-        $count->select('COUNT(*) AS n');
-        $row = \Db::getInstance()->getRow($count);
-        return (int) ($row['n'] ?? 0);
-    }
 }
 ```
 
