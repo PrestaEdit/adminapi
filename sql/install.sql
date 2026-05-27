@@ -19,4 +19,4 @@ CREATE TABLE IF NOT EXISTS `PREFIX_apimodule_access_token` (
   `expires_at` DATETIME     NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_client_id` (`client_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
