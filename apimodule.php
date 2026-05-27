@@ -19,9 +19,9 @@ class Apimodule extends Module
         $this->author = 'PrestaEdit';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7.6.0', 'max' => '8.99.99'];
+        parent::__construct();
         $this->displayName = $this->l('Admin API Module');
         $this->description = $this->l('PrestaShop Admin API — port of ps_apiresources for PS 1.7+');
-        parent::__construct();
     }
 
     public function install(): bool
@@ -37,7 +37,8 @@ class Apimodule extends Module
     {
         return parent::uninstall()
             && $this->uninstallSql()
-            && $this->removeRsaKeys();
+            && $this->removeRsaKeys()
+            && $this->uninstallTab();
     }
 
     public function hookModuleRoutes(): array
@@ -108,7 +109,11 @@ class Apimodule extends Module
 
     private function executeSqlFile(string $path): bool
     {
-        $sql = str_replace('PREFIX_', _DB_PREFIX_, (string) file_get_contents($path));
+        $content = file_get_contents($path);
+        if ($content === false) {
+            return false;
+        }
+        $sql = str_replace('PREFIX_', _DB_PREFIX_, $content);
         foreach (array_filter(array_map('trim', explode(';', $sql))) as $query) {
             if (!\Db::getInstance()->execute($query)) {
                 return false;
@@ -157,12 +162,20 @@ class Apimodule extends Module
             return false;
         }
 
-        openssl_pkey_export($key, $privateKeyPem);
+        if (!openssl_pkey_export($key, $privateKeyPem)) {
+            return false;
+        }
         $details = openssl_pkey_get_details($key);
+        if (!$details || empty($details['key'])) {
+            return false;
+        }
 
-        file_put_contents(self::getPrivateKeyPath(), $privateKeyPem);
+        // Write private key atomically with correct permissions
+        $tmpPath = self::getPrivateKeyPath() . '.tmp';
+        file_put_contents($tmpPath, $privateKeyPem);
+        chmod($tmpPath, 0600);
+        rename($tmpPath, self::getPrivateKeyPath());
         file_put_contents(self::getPublicKeyPath(), $details['key']);
-        chmod(self::getPrivateKeyPath(), 0600);
 
         $encryptionKey = \Defuse\Crypto\Key::createNewRandomKey()->saveToAsciiSafeString();
         \Configuration::updateValue('APIMODULE_ENCRYPTION_KEY', $encryptionKey);
@@ -190,11 +203,22 @@ class Apimodule extends Module
         $tab->active = 1;
         $tab->class_name = 'AdminApimoduleClient';
         $tab->module = $this->name;
-        $tab->id_parent = (int) \Tab::getIdFromClassName('AdminParentStats');
+        $parentId = (int) \Tab::getIdFromClassName('AdminParentStats');
+        $tab->id_parent = $parentId ?: -1; // -1 = hidden if parent not found
         $tab->name = [];
         foreach (\Language::getLanguages(true) as $lang) {
             $tab->name[$lang['id_lang']] = 'API Manager';
         }
         return (bool) $tab->add();
+    }
+
+    private function uninstallTab(): bool
+    {
+        $id = (int) \Tab::getIdFromClassName('AdminApimoduleClient');
+        if ($id) {
+            $tab = new \Tab($id);
+            return (bool) $tab->delete();
+        }
+        return true;
     }
 }
