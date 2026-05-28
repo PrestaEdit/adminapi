@@ -52,21 +52,10 @@ class ApimoduleApiModuleFrontController extends ModuleFrontController
             return;
         }
 
-        // API resources — Dispatcher will be wired in Task 4.
-        // Return 501 so that routes are reachable but the handler is clearly not yet implemented.
-        $stream = $factory->createStream(
-            (string) json_encode([
-                'type'   => 'https://tools.ietf.org/html/rfc2616#section-10.5.2',
-                'title'  => 'Not Implemented',
-                'status' => 501,
-                'detail' => 'API resource dispatcher not yet wired (Task 4).',
-            ])
-        );
-        $response = $psrResponse
-            ->withStatus(501)
-            ->withHeader('Content-Type', 'application/problem+json')
-            ->withBody($stream);
-        $this->sendPsrResponse($response);
+        // API resources — Dispatcher (Task 4)
+        $dispatcher = new \PrestaEdit\ApiModule\Api\Dispatcher();
+        $psrResponse2 = $dispatcher->dispatch($psrRequest);
+        $this->sendPsrResponse($psrResponse2->toPsr($psrResponse));
     }
 
     private function sendPsrResponse(\Psr\Http\Message\ResponseInterface $response): void

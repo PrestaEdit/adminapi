@@ -50,3 +50,29 @@ if (!function_exists('pSQL')) {
 if (!defined('_DB_PREFIX_')) {
     define('_DB_PREFIX_', 'ps_');
 }
+
+if (!class_exists('Apimodule', false)) {
+    class Apimodule
+    {
+        public static function getPrivateKeyPath(): string
+        {
+            return dirname(__DIR__, 2) . '/var/keys/private.key';
+        }
+
+        public static function getPublicKeyPath(): string
+        {
+            return dirname(__DIR__, 2) . '/var/keys/public.key';
+        }
+    }
+}
+
+if (!class_exists('Configuration', false)) {
+    class Configuration
+    {
+        /** @return string|false */
+        public static function get(string $key)
+        {
+            return '';
+        }
+    }
+}
