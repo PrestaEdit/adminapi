@@ -38,9 +38,12 @@ if (!class_exists('Db')) {
 }
 
 if (!function_exists('pSQL')) {
-    function pSQL(string $value): string
+    /**
+     * @param mixed $value
+     */
+    function pSQL($value, bool $htmlOk = false): string
     {
-        return addslashes($value);
+        return addslashes((string) $value);
     }
 }
 

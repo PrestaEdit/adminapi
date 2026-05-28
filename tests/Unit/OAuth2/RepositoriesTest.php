@@ -35,10 +35,18 @@ class RepositoriesTest extends TestCase
         $this->assertFalse($repo->validateClient('inactive_client', 'any_secret', 'client_credentials'));
     }
 
-    public function testScopeRepositoryReturnsNullForUnknownScope(): void
+    public function testScopeRepositoryReturnsNullForInvalidScopeFormat(): void
     {
         $repo = new ScopeRepository();
         $this->assertNull($repo->getScopeEntityByIdentifier('nonexistent_scope'));
+    }
+
+    public function testScopeRepositoryAcceptsValidFormatWithoutRegistryCheck(): void
+    {
+        $repo = new ScopeRepository();
+        // Registry lookup is deferred to Task 5 (ResourceRegistry::scopeExists).
+        // At this layer, any syntactically valid identifier is accepted.
+        $this->assertNotNull($repo->getScopeEntityByIdentifier('any_valid_read'));
     }
 
     public function testAccessTokenRepositoryReturnsFalseForUnknownToken(): void
