@@ -36,10 +36,11 @@ class ApimoduleApiModuleFrontController extends ModuleFrontController
             } catch (OAuthServerException $e) {
                 $response = $e->generateHttpResponse($psrResponse);
             } catch (\Throwable $e) {
+                error_log('[apimodule] token endpoint error: ' . $e->getMessage());
                 $stream = $factory->createStream(
                     (string) json_encode([
                         'error'             => 'server_error',
-                        'error_description' => $e->getMessage(),
+                        'error_description' => 'An internal server error occurred.',
                     ])
                 );
                 $response = $psrResponse
@@ -70,7 +71,9 @@ class ApimoduleApiModuleFrontController extends ModuleFrontController
 
     private function sendPsrResponse(\Psr\Http\Message\ResponseInterface $response): void
     {
-        header_remove();
+        foreach (['Content-Type', 'Expires', 'Cache-Control', 'Pragma', 'X-Powered-By'] as $h) {
+            header_remove($h);
+        }
         http_response_code($response->getStatusCode());
         foreach ($response->getHeaders() as $name => $values) {
             foreach ($values as $value) {
