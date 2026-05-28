@@ -120,7 +120,7 @@ class AdminApimoduleClientController extends ModuleAdminController
             // Create — auto-generate secret
             $rawSecret = bin2hex(random_bytes(32));
 
-            \Db::getInstance()->insert('apimodule_client', [
+            $inserted = \Db::getInstance()->insert('apimodule_client', [
                 'client_id'     => pSQL($clientId),
                 'client_secret' => pSQL(password_hash($rawSecret, PASSWORD_BCRYPT)),
                 'client_name'   => pSQL($clientName),
@@ -129,6 +129,11 @@ class AdminApimoduleClientController extends ModuleAdminController
                 'date_add'      => date('Y-m-d H:i:s'),
                 'date_upd'      => date('Y-m-d H:i:s'),
             ]);
+
+            if (!$inserted) {
+                $this->errors[] = 'Failed to create client. The Client ID may already be in use.';
+                return;
+            }
 
             $this->confirmations[] = sprintf(
                 'Client created. Client ID: <strong>%s</strong><br>'
