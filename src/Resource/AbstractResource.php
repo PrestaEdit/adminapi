@@ -64,7 +64,7 @@ abstract class AbstractResource
     {
         $limit     = max(1, min(100, (int) ($filters['limit']    ?? 20)));
         $offset    = max(0, (int) ($filters['offset']   ?? 0));
-        $orderBy   = preg_replace('/[^a-zA-Z0-9_]/', '', $filters['orderBy']   ?? $defaultOrderBy);
+        $orderBy   = preg_replace('/[^a-zA-Z0-9_]/', '', (string) ($filters['orderBy'] ?? $defaultOrderBy));
         $sortOrder = strtolower($filters['sortOrder'] ?? 'asc') === 'desc' ? 'DESC' : 'ASC';
         return compact('limit', 'offset', 'orderBy', 'sortOrder');
     }

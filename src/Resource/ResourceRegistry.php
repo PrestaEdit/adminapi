@@ -79,6 +79,9 @@ class ResourceRegistry
         self::$routeTable = [];
 
         foreach (self::$resources as $class) {
+            if (!class_exists($class)) {
+                throw new \LogicException("ResourceRegistry: class {$class} is not loadable.");
+            }
             $def        = $class::definition();
             $uriTpl     = $def['uriTemplate'];
             $operations = $def['operations'];

@@ -77,6 +77,22 @@ if (!class_exists('Configuration', false)) {
     }
 }
 
+if (!class_exists('Language', false)) {
+    class Language
+    {
+        /**
+         * @return array<int, array{id_lang:int, locale:string, language_code:string, name:string}>
+         */
+        public static function getLanguages(bool $active = true, $idShop = false, bool $idsOnly = false): array
+        {
+            return [
+                ['id_lang' => 1, 'locale' => 'en-US', 'language_code' => 'en', 'name' => 'English'],
+                ['id_lang' => 2, 'locale' => 'fr-FR', 'language_code' => 'fr', 'name' => 'Français'],
+            ];
+        }
+    }
+}
+
 if (!class_exists('DbQuery', false)) {
     class DbQuery
     {
