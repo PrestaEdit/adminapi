@@ -79,10 +79,17 @@ class AdminApimoduleClientController extends ModuleAdminController
         $clientName = \Tools::getValue('client_name');
         $active     = (int) \Tools::getValue('active');
 
-        // Collect selected scopes
+        // Issue 2: validate that client_name is non-empty
+        if (empty($clientName)) {
+            $this->errors[] = 'Client Name is required.';
+            return;
+        }
+
+        // Collect selected scopes (Issue 1: assign once, iterate once)
         $selectedScopes = [];
-        foreach (array_keys($this->getAllScopes()) as $domain) {
-            foreach ($this->getAllScopes()[$domain] as $scope) {
+        $allScopesMap   = $this->getAllScopes();
+        foreach ($allScopesMap as $domain => $scopes) {
+            foreach ($scopes as $scope) {
                 if (\Tools::getValue('scope_' . md5($scope))) {
                     $selectedScopes[] = $scope;
                 }
@@ -104,7 +111,11 @@ class AdminApimoduleClientController extends ModuleAdminController
                 $data['client_secret'] = pSQL(password_hash((string) $raw, PASSWORD_BCRYPT));
             }
 
-            \Db::getInstance()->update('apimodule_client', $data, 'id = ' . (int) $this->object->id);
+            // Issue 3: check return value to catch UNIQUE KEY violations on client_id
+            if (!\Db::getInstance()->update('apimodule_client', $data, 'id = ' . (int) $this->object->id)) {
+                $this->errors[] = 'Failed to update client. The Client ID may already be in use.';
+                return;
+            }
         } else {
             // Create — auto-generate secret
             $rawSecret = bin2hex(random_bytes(32));
