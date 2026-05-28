@@ -76,3 +76,15 @@ if (!class_exists('Configuration', false)) {
         }
     }
 }
+
+if (!class_exists('DbQuery', false)) {
+    class DbQuery
+    {
+        private string $sql = '';
+        public function select(string $fields): self { $this->sql .= " SELECT {$fields}"; return $this; }
+        public function from(string $table, string $alias = ''): self { $this->sql .= " FROM {$table} {$alias}"; return $this; }
+        public function limit(int $limit, int $offset = 0): self { $this->sql .= " LIMIT {$offset}, {$limit}"; return $this; }
+        public function orderBy(string $fields): self { $this->sql .= " ORDER BY {$fields}"; return $this; }
+        public function build(): string { return $this->sql; }
+    }
+}
