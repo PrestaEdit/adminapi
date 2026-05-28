@@ -67,9 +67,12 @@ class Response
             $response = $response->withHeader($name, $value);
         }
         if ($this->data !== null) {
-            $response->getBody()->write(
-                json_encode($this->data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
-            );
+            $encoded = json_encode($this->data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            if ($encoded === false) {
+                error_log('[apimodule] json_encode failed: ' . json_last_error_msg());
+                $encoded = '{"error":"Response encoding failed"}';
+            }
+            $response->getBody()->write($encoded);
         }
         return $response;
     }

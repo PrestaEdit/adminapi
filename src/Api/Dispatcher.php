@@ -21,7 +21,7 @@ class Dispatcher
             $authenticatedRequest = ResourceServer::getInstance()
                 ->validateAuthenticatedRequest($psrRequest);
         } catch (OAuthServerException $e) {
-            return Response::error(401, $e->getMessage());
+            return Response::error($e->getHttpStatusCode(), $e->getMessage());
         }
 
         $tokenScopes = (array) $authenticatedRequest->getAttribute('oauth_scopes', []);
@@ -89,7 +89,8 @@ class Dispatcher
             return Response::validationError($e->getErrors());
         } catch (\Throwable $e) {
             $status = $e->getCode() >= 400 && $e->getCode() < 600 ? (int) $e->getCode() : 500;
-            return Response::error($status, $e->getMessage());
+            error_log('[apimodule] dispatcher error: ' . $e->getMessage());
+            return Response::error($status, 'An internal server error occurred.');
         }
     }
 
