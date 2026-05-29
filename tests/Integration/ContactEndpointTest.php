@@ -5,7 +5,23 @@ namespace PrestaEdit\ApiModule\Tests\Integration;
 
 class ContactEndpointTest extends ApiTestCase
 {
-    private static int $createdContactId;
+    private static int $createdContactId = 0;
+
+    public static function tearDownAfterClass(): void
+    {
+        if (self::$createdContactId > 0) {
+            \Db::getInstance()->delete(
+                'contact',
+                'id_contact = ' . self::$createdContactId
+            );
+            \Db::getInstance()->delete(
+                'contact_lang',
+                'id_contact = ' . self::$createdContactId
+            );
+            self::$createdContactId = 0;
+        }
+        parent::tearDownAfterClass();
+    }
 
     public function testGetContactListWithoutToken(): void
     {

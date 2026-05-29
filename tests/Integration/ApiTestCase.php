@@ -73,6 +73,8 @@ abstract class ApiTestCase extends TestCase
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_POST           => true,
                 CURLOPT_POSTFIELDS     => $postFields,
+                CURLOPT_TIMEOUT        => 10,
+                CURLOPT_CONNECTTIMEOUT => 5,
             ]);
             $body = (string) curl_exec($ch);
             curl_close($ch);
@@ -108,6 +110,8 @@ abstract class ApiTestCase extends TestCase
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST  => $method,
             CURLOPT_HTTPHEADER     => $headers,
+            CURLOPT_TIMEOUT        => 10,
+            CURLOPT_CONNECTTIMEOUT => 5,
         ]);
 
         if (!empty($data)) {
