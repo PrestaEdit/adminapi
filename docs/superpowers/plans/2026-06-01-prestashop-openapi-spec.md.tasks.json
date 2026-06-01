@@ -1,0 +1,39 @@
+{
+  "planPath": "docs/superpowers/plans/2026-06-01-prestashop-openapi-spec.md",
+  "tasks": [
+    {
+      "id": 33,
+      "subject": "Task 1 (Plan G): ResourceRegistry public accessors",
+      "status": "completed",
+      "description": "**Goal:** Exposer getResourceClasses() et allScopes() sur ResourceRegistry pour le générateur OpenAPI (DRY).\n\n**Files:**\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"getResourceClasses() retourne les FQCN\",\"allScopes() retourne scopes dédupliqués (proxy du cache privé)\",\"aucune régression\"]}\n```"
+    },
+    {
+      "id": 34,
+      "subject": "Task 2 (Plan G): OpenApiGenerator + tests",
+      "status": "completed",
+      "blockedBy": [
+        33
+      ],
+      "description": "**Goal:** Générateur OpenAPI 3.0 à partir des definition(), couvert par tests unitaires.\n\n**Files:**\n- Create: `src/Api/OpenApiGenerator.php`\n- Create: `tests/Unit/OpenApiGeneratorTest.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/OpenApiGeneratorTest.php --testdox` → all passing\n\n```json:metadata\n{\"files\":[\"src/Api/OpenApiGenerator.php\",\"tests/Unit/OpenApiGeneratorTest.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/OpenApiGeneratorTest.php --testdox\",\"acceptanceCriteria\":[\"generate() → openapi 3.0.3, info, paths, components\",\"securityScheme oauth2 clientCredentials tokenUrl + scopes\",\"/contacts GET+POST, /contacts/{id} GET+PATCH+DELETE, /contacts/bulk-delete DELETE\",\"operationId + security + responses par opération\",\"list expose limit/offset/orderBy/sortOrder\",\"/modules read-only (pas de POST/DELETE)\",\"tests passing\"]}\n```"
+    },
+    {
+      "id": 35,
+      "subject": "Task 3 (Plan G): Endpoint GET /admin-api/openapi.json",
+      "status": "completed",
+      "blockedBy": [
+        34
+      ],
+      "description": "**Goal:** Servir le document OpenAPI en JSON via le front controller (sans auth) et déclarer la route.\n\n**Files:**\n- Modify: `adminapi.php`\n- Modify: `controllers/front/api.php`\n\n**Verify:** `php -l adminapi.php && php -l controllers/front/api.php`\n\n```json:metadata\n{\"files\":[\"adminapi.php\",\"controllers/front/api.php\"],\"verifyCommand\":\"php -l adminapi.php && php -l controllers/front/api.php\",\"acceptanceCriteria\":[\"route admin-api/openapi.json déclarée\",\"GET → 200 + application/json + document, sans token\",\"n'interfère pas avec token endpoint ni Dispatcher\",\"php -l clean\"]}\n```"
+    },
+    {
+      "id": 36,
+      "subject": "Task 4 (Plan G): Documenter l'endpoint dans le README",
+      "status": "completed",
+      "blockedBy": [
+        35
+      ],
+      "description": "**Goal:** Ajouter une section README sur l'endpoint OpenAPI + entrée table des matières.\n\n**Files:**\n- Modify: `README.md`\n\n**Verify:** Relecture visuelle.\n\n```json:metadata\n{\"files\":[\"README.md\"],\"verifyCommand\":\"grep -n openapi.json README.md\",\"acceptanceCriteria\":[\"README mentionne GET /admin-api/openapi.json + usage Swagger/Postman\",\"entrée dans la table des matières\"]}\n```"
+    }
+  ],
+  "lastUpdated": "2026-06-01T14:00:00Z"
+}
