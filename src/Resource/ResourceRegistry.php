@@ -24,6 +24,8 @@ use PrestaEdit\ApiModule\Resource\Attribute\AttributeResource;
 use PrestaEdit\ApiModule\Resource\Feature\FeatureResource;
 use PrestaEdit\ApiModule\Resource\FeatureValue\FeatureValueResource;
 use PrestaEdit\ApiModule\Resource\CustomerGroup\CustomerGroupResource;
+use PrestaEdit\ApiModule\Resource\Customer\CustomerResource;
+use PrestaEdit\ApiModule\Resource\Category\CategoryResource;
 
 class ResourceRegistry
 {
@@ -50,6 +52,8 @@ class ResourceRegistry
         FeatureResource::class,
         FeatureValueResource::class,
         CustomerGroupResource::class,
+        CustomerResource::class,
+        CategoryResource::class,
     ];
 
     /** @var array<string, array<string, array{0:string,1:string,2:string[]}>>|null Route table, built on first call */
