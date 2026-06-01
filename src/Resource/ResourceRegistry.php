@@ -26,6 +26,10 @@ use PrestaEdit\ApiModule\Resource\FeatureValue\FeatureValueResource;
 use PrestaEdit\ApiModule\Resource\CustomerGroup\CustomerGroupResource;
 use PrestaEdit\ApiModule\Resource\Customer\CustomerResource;
 use PrestaEdit\ApiModule\Resource\Category\CategoryResource;
+use PrestaEdit\ApiModule\Resource\CartRule\CartRuleResource;
+use PrestaEdit\ApiModule\Resource\Discount\DiscountResource;
+use PrestaEdit\ApiModule\Resource\Module\ModuleResource;
+use PrestaEdit\ApiModule\Resource\ApiClient\ApiClientResource;
 
 class ResourceRegistry
 {
@@ -54,6 +58,10 @@ class ResourceRegistry
         CustomerGroupResource::class,
         CustomerResource::class,
         CategoryResource::class,
+        CartRuleResource::class,
+        DiscountResource::class,
+        ModuleResource::class,
+        ApiClientResource::class,
     ];
 
     /** @var array<string, array<string, array{0:string,1:string,2:string[]}>>|null Route table, built on first call */
