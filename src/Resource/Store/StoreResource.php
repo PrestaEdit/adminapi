@@ -108,7 +108,7 @@ class StoreResource extends AbstractResource implements ResourceInterface
         if (isset($data['longitude']))     { $store->longitude  = (float) $data['longitude']; }
         if (isset($data['names']))         { $store->name       = $this->buildPsLocalizedField($data['names']); }
         if (isset($data['addressLines']))  { $store->address1   = $this->buildPsLocalizedField($data['addressLines']); }
-        if (isset($data['addressLines2'])){ $store->address2   = $this->buildPsLocalizedField($data['addressLines2']); }
+        if (isset($data['addressLines2'])) { $store->address2  = $this->buildPsLocalizedField($data['addressLines2']); }
         if (isset($data['hours']))         { $store->hours      = $this->buildPsLocalizedField($data['hours']); }
         if (isset($data['notes']))         { $store->note       = $this->buildPsLocalizedField($data['notes']); }
 

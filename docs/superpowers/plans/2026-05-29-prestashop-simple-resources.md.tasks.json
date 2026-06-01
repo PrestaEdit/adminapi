@@ -1,0 +1,66 @@
+{
+  "planPath": "docs/superpowers/plans/2026-05-29-prestashop-simple-resources.md",
+  "tasks": [
+    {
+      "id": 10,
+      "subject": "Task 1: Zone + Hook",
+      "status": "completed",
+      "description": "**Goal:** Implémenter ZoneResource et HookResource (non-localisées) et les enregistrer dans ResourceRegistry.\n\n**Files:**\n- Create: `src/Resource/Zone/ZoneResource.php`\n- Create: `src/Resource/Hook/HookResource.php`\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/Zone/ZoneResource.php\",\"src/Resource/Hook/HookResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /zones → 200 paginé\",\"POST /zones sans name → 422\",\"POST /zones → 201\",\"GET /hooks → 200 paginé\",\"POST /hooks sans name → 422\",\"tests/Unit/ passing\"]}\n```"
+    },
+    {
+      "id": 11,
+      "subject": "Task 2: TaxRulesGroup + SearchEngine + SearchAlias",
+      "status": "completed",
+      "description": "**Goal:** Implémenter TaxRulesGroupResource, SearchEngineResource et SearchAliasResource (non-localisées).\n\n**Files:**\n- Create: `src/Resource/TaxRulesGroup/TaxRulesGroupResource.php`\n- Create: `src/Resource/SearchEngine/SearchEngineResource.php`\n- Create: `src/Resource/SearchAlias/SearchAliasResource.php`\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/TaxRulesGroup/TaxRulesGroupResource.php\",\"src/Resource/SearchEngine/SearchEngineResource.php\",\"src/Resource/SearchAlias/SearchAliasResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /tax-rules-groups → 200\",\"POST sans name → 422\",\"GET /search-engines → 200\",\"GET /search-aliases → 200\",\"tests/Unit/ passing\"]}\n```"
+    },
+    {
+      "id": 12,
+      "subject": "Task 3: WebserviceKey",
+      "status": "completed",
+      "description": "**Goal:** Implémenter WebserviceKeyResource avec génération automatique de clé.\n\n**Files:**\n- Create: `src/Resource/WebserviceKey/WebserviceKeyResource.php`\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/WebserviceKey/WebserviceKeyResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /webservice-keys → 200\",\"POST sans key → génère clé auto 32 chars\",\"POST avec key → utilise la clé fournie\",\"tests/Unit/ passing\"]}\n```"
+    },
+    {
+      "id": 13,
+      "subject": "Task 4: Title + Profile",
+      "status": "completed",
+      "description": "**Goal:** Implémenter TitleResource (ps_gender) et ProfileResource — localisés.\n\n**Files:**\n- Create: `src/Resource/Title/TitleResource.php`\n- Create: `src/Resource/Profile/ProfileResource.php`\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/Title/TitleResource.php\",\"src/Resource/Profile/ProfileResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /titles → 200 avec names localisé\",\"POST /titles sans type ou names → 422\",\"GET /profiles → 200 avec names localisé\",\"POST /profiles sans names → 422\",\"tests/Unit/ passing\"]}\n```"
+    },
+    {
+      "id": 14,
+      "subject": "Task 5: Tax",
+      "status": "completed",
+      "description": "**Goal:** Implémenter TaxResource — localisé, soft-delete, rate décimal.\n\n**Files:**\n- Create: `src/Resource/Tax/TaxResource.php`\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/Tax/TaxResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /taxes filtre deleted=0\",\"GET /taxes/1 → 404 si deleted=1\",\"POST sans rate ou names → 422\",\"DELETE → soft-delete (deleted=1)\",\"rate exposé comme string décimal\",\"tests/Unit/ passing\"]}\n```"
+    },
+    {
+      "id": 15,
+      "subject": "Task 6: Country",
+      "status": "completed",
+      "description": "**Goal:** Implémenter CountryResource — localisé avec zone FK et flags booléens.\n\n**Files:**\n- Create: `src/Resource/Country/CountryResource.php`\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/Country/CountryResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /countries → 200 avec isoCode et names localisé\",\"POST sans isoCode, idZone ou names → 422\",\"tests/Unit/ passing\"]}\n```"
+    },
+    {
+      "id": 16,
+      "subject": "Task 7: Tab",
+      "status": "completed",
+      "description": "**Goal:** Implémenter TabResource — menus back-office PS, localisé avec idParent.\n\n**Files:**\n- Create: `src/Resource/Tab/TabResource.php`\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/Tab/TabResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /tabs → 200 avec className, idParent, names\",\"POST sans className ou names → 422\",\"tests/Unit/ passing\"]}\n```"
+    },
+    {
+      "id": 17,
+      "subject": "Task 8: Manufacturer + Supplier",
+      "status": "completed",
+      "description": "**Goal:** Implémenter ManufacturerResource et SupplierResource — localisés avec descriptions.\n\n**Files:**\n- Create: `src/Resource/Manufacturer/ManufacturerResource.php`\n- Create: `src/Resource/Supplier/SupplierResource.php`\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/Manufacturer/ManufacturerResource.php\",\"src/Resource/Supplier/SupplierResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /manufacturers → 200 avec descriptions localisé\",\"POST sans name → 422\",\"GET /suppliers → 200 avec descriptions localisé\",\"POST sans name → 422\",\"tests/Unit/ passing\"]}\n```"
+    },
+    {
+      "id": 18,
+      "subject": "Task 9: Store",
+      "status": "completed",
+      "description": "**Goal:** Implémenter StoreResource — localisé avec adresse et coordonnées géographiques.\n\n**Files:**\n- Create: `src/Resource/Store/StoreResource.php`\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/Store/StoreResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /stores → 200 avec city, latitude, longitude, names\",\"POST sans idCountry, city, postcode ou names → 422\",\"tests/Unit/ passing\"]}\n```"
+    },
+    {
+      "id": 19,
+      "subject": "Task 10: Address",
+      "status": "completed",
+      "description": "**Goal:** Implémenter AddressResource — non-localisé avec soft-delete et champs FK.\n\n**Files:**\n- Create: `src/Resource/Address/AddressResource.php`\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/Address/AddressResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /addresses filtre deleted=0\",\"GET /addresses/1 → 404 si deleted\",\"POST sans idCountry/alias/lastname/firstname/address1/city → 422\",\"DELETE → soft-delete\",\"tests/Unit/ passing\"]}\n```"
+    }
+  ],
+  "lastUpdated": "2026-05-29T12:00:00Z"
+}
