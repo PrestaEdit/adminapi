@@ -30,6 +30,7 @@ use PrestaEdit\ApiModule\Resource\CartRule\CartRuleResource;
 use PrestaEdit\ApiModule\Resource\Discount\DiscountResource;
 use PrestaEdit\ApiModule\Resource\Module\ModuleResource;
 use PrestaEdit\ApiModule\Resource\ApiClient\ApiClientResource;
+use PrestaEdit\ApiModule\Resource\Product\ProductResource;
 
 class ResourceRegistry
 {
@@ -62,6 +63,7 @@ class ResourceRegistry
         DiscountResource::class,
         ModuleResource::class,
         ApiClientResource::class,
+        ProductResource::class,
     ];
 
     /** @var array<string, array<string, array{0:string,1:string,2:string[]}>>|null Route table, built on first call */
