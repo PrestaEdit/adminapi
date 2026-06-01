@@ -33,6 +33,8 @@ use PrestaEdit\ApiModule\Resource\ApiClient\ApiClientResource;
 use PrestaEdit\ApiModule\Resource\Product\ProductResource;
 use PrestaEdit\ApiModule\Resource\ProductCombination\ProductCombinationResource;
 use PrestaEdit\ApiModule\Resource\StockAvailable\StockAvailableResource;
+use PrestaEdit\ApiModule\Resource\ProductImage\ProductImageResource;
+use PrestaEdit\ApiModule\Resource\SpecificPrice\SpecificPriceResource;
 
 class ResourceRegistry
 {
@@ -68,6 +70,8 @@ class ResourceRegistry
         ProductResource::class,
         ProductCombinationResource::class,
         StockAvailableResource::class,
+        ProductImageResource::class,
+        SpecificPriceResource::class,
     ];
 
     /** @var array<string, array<string, array{0:string,1:string,2:string[]}>>|null Route table, built on first call */

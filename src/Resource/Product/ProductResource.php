@@ -82,8 +82,9 @@ class ProductResource extends AbstractResource implements ResourceInterface
             throw new \RuntimeException('Failed to create product.', 500);
         }
 
-        // Associate to default category
+        // Ensure the default category is always associated
         $product->addToCategories([(int) $product->id_category_default]);
+        $this->persistAssociations($product, $data);
 
         return $this->get((int) $product->id, $context);
     }
@@ -99,6 +100,7 @@ class ProductResource extends AbstractResource implements ResourceInterface
         if (!$product->save()) {
             throw new \RuntimeException('Failed to update product.', 500);
         }
+        $this->persistAssociations($product, $data);
         return $this->get($id, $context);
     }
 
@@ -177,6 +179,33 @@ class ProductResource extends AbstractResource implements ResourceInterface
         }
     }
 
+    /**
+     * Persists product↔category and product↔feature associations.
+     * Only touches an association when its key is present in the payload.
+     *
+     * @param array<string,mixed> $data
+     */
+    private function persistAssociations(\Product $product, array $data): void
+    {
+        if (isset($data['categoryIds']) && is_array($data['categoryIds'])) {
+            $product->updateCategories(array_map('intval', $data['categoryIds']));
+        }
+
+        if (isset($data['features']) && is_array($data['features'])) {
+            $product->deleteFeatures();
+            foreach ($data['features'] as $feature) {
+                if (!isset($feature['idFeature'], $feature['idFeatureValue'])) {
+                    continue;
+                }
+                \Product::addFeatureProductImport(
+                    (int) $product->id,
+                    (int) $feature['idFeature'],
+                    (int) $feature['idFeatureValue']
+                );
+            }
+        }
+    }
+
     // ── Map ──────────────────────────────────────────────────────────────────
 
     private function map(\Product $product, array $context): array
@@ -209,6 +238,23 @@ class ProductResource extends AbstractResource implements ResourceInterface
                AND `id_shop` = 1'
         );
         $quantity = $stockRow ? (int) $stockRow['quantity'] : 0;
+
+        $categoryRows = \Db::getInstance()->executeS(
+            'SELECT `id_category` FROM `' . _DB_PREFIX_ . 'category_product`
+             WHERE `id_product` = ' . (int) $product->id
+        );
+        $categoryIds = array_map('intval', array_column($categoryRows ?: [], 'id_category'));
+
+        $featureRows = \Db::getInstance()->executeS(
+            'SELECT `id_feature`, `id_feature_value` FROM `' . _DB_PREFIX_ . 'feature_product`
+             WHERE `id_product` = ' . (int) $product->id
+        );
+        $features = array_map(static function (array $r): array {
+            return [
+                'idFeature'      => (int) $r['id_feature'],
+                'idFeatureValue' => (int) $r['id_feature_value'],
+            ];
+        }, $featureRows ?: []);
 
         return [
             'productId'              => (int) $product->id,
@@ -244,6 +290,8 @@ class ProductResource extends AbstractResource implements ResourceInterface
             'unity'                  => $product->unity ?? '',
             'dateAdd'                => $product->date_add ?? '',
             'dateUpd'                => $product->date_upd ?? '',
+            'categoryIds'            => $categoryIds,
+            'features'               => $features,
             'names'                  => $this->getLocalizedField($names),
             'descriptions'           => $this->getLocalizedField($descs),
             'shortDescriptions'      => $this->getLocalizedField($shortDescs),
