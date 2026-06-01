@@ -209,6 +209,7 @@ class ResourceRegistry
                 self::$allScopes[] = $opDef['scope'];
             }
         }
-        return array_values(array_unique(self::$allScopes));
+        self::$allScopes = array_values(array_unique(self::$allScopes));
+        return self::$allScopes;
     }
 }
