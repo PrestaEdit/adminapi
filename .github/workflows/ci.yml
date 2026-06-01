@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    name: Unit tests (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # 7.4 is the floor (canonical target); 8.0–8.2 verify forward-compat.
+        # Dependency versions are locked & platform-pinned to 7.4 in composer.json,
+        # so every job installs the same vendor tree and only the runtime PHP varies.
+        php: ['7.4', '8.0', '8.1', '8.2']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, openssl, json
+          coverage: none
+          tools: composer:v2
+
+      - name: Validate composer.json / composer.lock
+        run: composer validate --no-check-publish
+
+      - name: Install dependencies (from lock)
+        uses: ramsey/composer-install@v3
+
+      - name: Run unit test suite
+        # Integration suite (phpunit.integration.xml) is intentionally excluded:
+        # it boots a live PrestaShop install (PS_ROOT) which CI does not provide.
+        run: vendor/bin/phpunit -c phpunit.xml --testdox
