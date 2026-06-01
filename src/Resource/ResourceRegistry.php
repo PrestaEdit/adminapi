@@ -17,6 +17,8 @@ use PrestaEdit\ApiModule\Resource\Country\CountryResource;
 use PrestaEdit\ApiModule\Resource\Tab\TabResource;
 use PrestaEdit\ApiModule\Resource\Manufacturer\ManufacturerResource;
 use PrestaEdit\ApiModule\Resource\Supplier\SupplierResource;
+use PrestaEdit\ApiModule\Resource\Store\StoreResource;
+use PrestaEdit\ApiModule\Resource\Address\AddressResource;
 
 class ResourceRegistry
 {
@@ -36,6 +38,8 @@ class ResourceRegistry
         TabResource::class,
         ManufacturerResource::class,
         SupplierResource::class,
+        StoreResource::class,
+        AddressResource::class,
     ];
 
     /** @var array<string, array<string, array{0:string,1:string,2:string[]}>>|null Route table, built on first call */
