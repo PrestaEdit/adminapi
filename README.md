@@ -1,8 +1,10 @@
-# ApiModule — PrestaShop Admin API
+# adminapi — PrestaShop Admin API
+
+[![CI](https://github.com/PrestaEdit/adminapi/actions/workflows/ci.yml/badge.svg)](https://github.com/PrestaEdit/adminapi/actions/workflows/ci.yml)
 
 > A back-port of PrestaShop 9's Admin API (`ps_apiresources`) to PrestaShop **1.7.6+ / 8.x**.
 
-`ApiModule` exposes a modern, OAuth2-secured REST API under `/admin-api/*`. It replicates the resource model, scopes, and JSON shapes of the PS9 Admin API so that integrations written against PS9 work against PS 1.7/8 with minimal changes.
+The **adminapi** module (technical name `adminapi`, display name *Admin API Module*) exposes a modern, OAuth2-secured REST API under `/admin-api/*`. It replicates the resource model, scopes, and JSON shapes of the PS9 Admin API so that integrations written against PS9 work against PS 1.7/8 with minimal changes.
 
 - **31 resources** covering the 29 PS9 scope domains, plus product variants and stock.
 - **OAuth2 Client Credentials** grant with RSA-signed JWT access tokens.
