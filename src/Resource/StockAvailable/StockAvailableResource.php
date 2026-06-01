@@ -80,15 +80,20 @@ class StockAvailableResource extends AbstractResource implements ResourceInterfa
                 (int) $data['quantity'],
                 (int) $sa->id_shop
             );
+            // Reload so subsequent save() does not overwrite the new quantity with stale data
+            $sa = new \StockAvailable($id);
         }
 
+        $dirty = false;
         if (isset($data['outOfStock'])) {
             $sa->out_of_stock = (int) $data['outOfStock'];
-            $sa->save();
+            $dirty = true;
         }
-
         if (isset($data['location'])) {
             $sa->location = $data['location'];
+            $dirty = true;
+        }
+        if ($dirty) {
             $sa->save();
         }
 
