@@ -25,6 +25,7 @@ class OpenApiGeneratorTest extends TestCase
         $spec = $this->spec();
         $this->assertSame('3.0.3', $spec['openapi']);
         $this->assertArrayHasKey('info', $spec);
+        $this->assertArrayHasKey('servers', $spec);
         $this->assertArrayHasKey('paths', $spec);
         $this->assertArrayHasKey('components', $spec);
         $this->assertArrayHasKey('title', $spec['info']);

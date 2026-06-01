@@ -85,6 +85,8 @@ HTTP request  →  hookModuleRoutes (/admin-api/*)
                    │
                    ├─ POST /admin-api/access_token → AuthorizationServer (issue JWT)
                    │
+                   ├─ GET  /admin-api/openapi.json  → OpenApiGenerator (unauthenticated)
+                   │
                    └─ everything else → Api\Dispatcher
                           1. validate Bearer token  (ResourceServer)
                           2. resolve route           (ResourceRegistry)
@@ -397,7 +399,7 @@ adminapi/
 ├── sql/{install,uninstall}.sql
 ├── src/
 │   ├── OAuth2/                        # Servers, entities, repositories
-│   ├── Api/                           # Dispatcher, Request, Response, ShopContextResolver
+│   ├── Api/                           # Dispatcher, Request, Response, ShopContextResolver, OpenApiGenerator
 │   ├── Exception/                     # ResourceNotFound, Validation
 │   ├── Model/AdminapiClient.php      # ObjectModel for the client table
 │   └── Resource/                      # 31 resources + AbstractResource + ResourceRegistry
