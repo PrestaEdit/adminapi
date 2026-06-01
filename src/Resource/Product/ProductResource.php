@@ -188,7 +188,14 @@ class ProductResource extends AbstractResource implements ResourceInterface
     private function persistAssociations(\Product $product, array $data): void
     {
         if (isset($data['categoryIds']) && is_array($data['categoryIds'])) {
-            $product->updateCategories(array_map('intval', $data['categoryIds']));
+            $categoryIds = array_map('intval', $data['categoryIds']);
+            // Always keep the default category associated, otherwise updateCategories()
+            // would leave ps_category_product out of sync with id_category_default.
+            $defaultCategory = (int) $product->id_category_default;
+            if ($defaultCategory > 0 && !in_array($defaultCategory, $categoryIds, true)) {
+                $categoryIds[] = $defaultCategory;
+            }
+            $product->updateCategories($categoryIds);
         }
 
         if (isset($data['features']) && is_array($data['features'])) {
