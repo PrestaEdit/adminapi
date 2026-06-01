@@ -55,6 +55,12 @@ class Response
         ]);
     }
 
+    public function withHeader(string $name, string $value): self
+    {
+        $this->headers[$name] = $value;
+        return $this;
+    }
+
     public function getStatusCode(): int
     {
         return $this->statusCode;
