@@ -1,0 +1,19 @@
+{
+  "planPath": "docs/superpowers/plans/2026-05-29-prestashop-product-subresources.md",
+  "tasks": [
+    {
+      "id": 28,
+      "subject": "Task 1 (Plan E): ProductCombination",
+      "status": "pending",
+      "description": "**Goal:** Implémenter ProductCombinationResource — variantes produit (ps_product_attribute) avec liaison d'attributs.\n\n**Files:**\n- Create: `src/Resource/ProductCombination/ProductCombinationResource.php`\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/ProductCombination/ProductCombinationResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /product-combinations → 200 paginé\",\"GET ?productId=1 → filtre par produit\",\"GET /product-combinations/1 → 200 avec attributeIds\",\"POST sans idProduct ou attributeIds → 422\",\"POST → 201 avec setAttributes\",\"PATCH → 200\",\"DELETE → 204\",\"bulk-delete → 204\",\"tests/Unit/ passing\"]}\n```"
+    },
+    {
+      "id": 29,
+      "subject": "Task 2 (Plan E): StockAvailable",
+      "status": "pending",
+      "blockedBy": [28],
+      "description": "**Goal:** Implémenter StockAvailableResource — lecture + update du stock, pas de create/delete (gérés par PS).\n\n**Files:**\n- Create: `src/Resource/StockAvailable/StockAvailableResource.php`\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/StockAvailable/StockAvailableResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /stock-availables → 200 paginé\",\"GET ?productId=1 → filtre par produit\",\"GET /stock-availables/1 → 200 avec quantity\",\"PATCH avec quantity → 200 via setQuantity\",\"POST → 405\",\"DELETE → 405\",\"tests/Unit/ passing\"]}\n```"
+    }
+  ],
+  "lastUpdated": "2026-05-29T18:00:00Z"
+}
