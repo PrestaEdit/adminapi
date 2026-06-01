@@ -1,0 +1,30 @@
+{
+  "planPath": "docs/superpowers/plans/2026-06-01-prestashop-product-associations.md",
+  "tasks": [
+    {
+      "id": 30,
+      "subject": "Task 1 (Plan F): ProductImage",
+      "status": "completed",
+      "description": "**Goal:** Exposer les métadonnées d'images produit (ps_image/ps_image_lang) — légendes, position, cover. Pas d'upload binaire (create → 405).\n\n**Files:**\n- Create: `src/Resource/ProductImage/ProductImageResource.php`\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/ProductImage/ProductImageResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /product-images → 200 paginé\",\"GET ?productId=1 → filtre\",\"GET /product-images/1 → 200 avec legends localisés\",\"PATCH cover:true retire le cover des autres images\",\"DELETE → 204 (Image::delete)\",\"POST → 405\",\"tests/Unit/ passing\"]}\n```"
+    },
+    {
+      "id": 31,
+      "subject": "Task 2 (Plan F): SpecificPrice",
+      "status": "completed",
+      "blockedBy": [
+        30
+      ],
+      "description": "**Goal:** Exposer les prix spécifiques (ps_specific_price) — CRUD complet, filtre productId, reductionType validé.\n\n**Files:**\n- Create: `src/Resource/SpecificPrice/SpecificPriceResource.php`\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/SpecificPrice/SpecificPriceResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /specific-prices → 200 paginé\",\"GET ?productId=1 → filtre\",\"POST sans idProduct → 422\",\"POST reductionType invalide → 422\",\"POST valide → 201\",\"DELETE → 204\",\"bulk-delete → 204\",\"tests/Unit/ passing\"]}\n```"
+    },
+    {
+      "id": 32,
+      "subject": "Task 3 (Plan F): Associations produit (categoryIds + features)",
+      "status": "completed",
+      "blockedBy": [
+        31
+      ],
+      "description": "**Goal:** Enrichir ProductResource pour exposer/persister les associations catégories (ps_category_product) et caractéristiques (ps_feature_product) comme champs categoryIds et features.\n\n**Files:**\n- Modify: `src/Resource/Product/ProductResource.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/Product/ProductResource.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /products/1 retourne categoryIds et features\",\"POST/PATCH categoryIds réassocie via updateCategories\",\"POST/PATCH features remplace via deleteFeatures + addFeatureProductImport\",\"associations préservées si absentes du payload\",\"tests/Unit/ passing\"]}\n```"
+    }
+  ],
+  "lastUpdated": "2026-06-01T13:00:00Z"
+}
