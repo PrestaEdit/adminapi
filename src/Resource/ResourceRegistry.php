@@ -6,6 +6,9 @@ namespace PrestaEdit\ApiModule\Resource;
 use PrestaEdit\ApiModule\Resource\Contact\ContactResource;
 use PrestaEdit\ApiModule\Resource\Zone\ZoneResource;
 use PrestaEdit\ApiModule\Resource\Hook\HookResource;
+use PrestaEdit\ApiModule\Resource\TaxRulesGroup\TaxRulesGroupResource;
+use PrestaEdit\ApiModule\Resource\SearchEngine\SearchEngineResource;
+use PrestaEdit\ApiModule\Resource\SearchAlias\SearchAliasResource;
 
 class ResourceRegistry
 {
@@ -14,6 +17,9 @@ class ResourceRegistry
         ContactResource::class,
         ZoneResource::class,
         HookResource::class,
+        TaxRulesGroupResource::class,
+        SearchEngineResource::class,
+        SearchAliasResource::class,
     ];
 
     /** @var array<string, array<string, array{0:string,1:string,2:string[]}>>|null Route table, built on first call */
