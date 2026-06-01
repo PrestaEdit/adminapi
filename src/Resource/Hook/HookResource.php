@@ -128,7 +128,7 @@ class HookResource extends AbstractResource implements ResourceInterface
             'name'        => $row['name'],
             'title'       => $row['title'] ?? '',
             'description' => $row['description'] ?? '',
-            'active'      => (bool) ($row['active'] ?? true),
+            'active'      => (bool) $row['active'],
         ];
     }
 }
