@@ -89,7 +89,7 @@ class Dispatcher
             return Response::validationError($e->getErrors());
         } catch (\Throwable $e) {
             $status = $e->getCode() >= 400 && $e->getCode() < 600 ? (int) $e->getCode() : 500;
-            error_log('[apimodule] dispatcher error: ' . $e->getMessage());
+            error_log('[adminapi] dispatcher error: ' . $e->getMessage());
             return Response::error($status, 'An internal server error occurred.');
         }
     }

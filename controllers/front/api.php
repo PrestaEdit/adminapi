@@ -6,7 +6,7 @@ use Nyholm\Psr7Server\ServerRequestCreator;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use PrestaEdit\ApiModule\OAuth2\AuthorizationServer;
 
-class ApimoduleApiModuleFrontController extends ModuleFrontController
+class AdminapiApiModuleFrontController extends ModuleFrontController
 {
     /** @var bool */
     public $ajax = true;
@@ -36,7 +36,7 @@ class ApimoduleApiModuleFrontController extends ModuleFrontController
             } catch (OAuthServerException $e) {
                 $response = $e->generateHttpResponse($psrResponse);
             } catch (\Throwable $e) {
-                error_log('[apimodule] token endpoint error: ' . $e->getMessage());
+                error_log('[adminapi] token endpoint error: ' . $e->getMessage());
                 $stream = $factory->createStream(
                     (string) json_encode([
                         'error'             => 'server_error',

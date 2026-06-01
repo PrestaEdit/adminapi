@@ -28,7 +28,7 @@ abstract class ApiTestCase extends TestCase
     private static function createTestClient(): void
     {
         $scopes = static::getAllScopes();
-        \Db::getInstance()->insert('apimodule_client', [
+        \Db::getInstance()->insert('adminapi_client', [
             'client_id'     => 'test_client',
             'client_secret' => password_hash('test_secret', PASSWORD_BCRYPT),
             'client_name'   => 'Test Client',
@@ -38,14 +38,14 @@ abstract class ApiTestCase extends TestCase
             'date_upd'      => date('Y-m-d H:i:s'),
         ]);
         $row = \Db::getInstance()->getRow(
-            "SELECT id FROM `" . _DB_PREFIX_ . "apimodule_client` WHERE client_id = 'test_client'"
+            "SELECT id FROM `" . _DB_PREFIX_ . "adminapi_client` WHERE client_id = 'test_client'"
         );
         static::$testClientId = $row ? (int) $row['id'] : null;
     }
 
     private static function removeTestClient(): void
     {
-        \Db::getInstance()->delete('apimodule_client', "client_id = 'test_client'");
+        \Db::getInstance()->delete('adminapi_client', "client_id = 'test_client'");
         self::$tokenCache = [];
     }
 

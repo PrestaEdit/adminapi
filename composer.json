@@ -1,5 +1,5 @@
 {
-    "name": "prestaedit/apimodule",
+    "name": "prestaedit/adminapi",
     "description": "PrestaShop Admin API — port of ps_apiresources for PS 1.7+",
     "type": "prestashop-module",
     "license": "AFL-3.0",
@@ -19,7 +19,7 @@
             "PrestaEdit\\ApiModule\\": "src/"
         },
         "classmap": [
-            "apimodule.php",
+            "adminapi.php",
             "controllers/",
             "src/Model/"
         ]

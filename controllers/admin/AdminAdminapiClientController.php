@@ -5,12 +5,12 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class AdminApimoduleClientController extends ModuleAdminController
+class AdminAdminapiClientController extends ModuleAdminController
 {
     public function __construct()
     {
-        $this->table       = 'apimodule_client';
-        $this->className   = 'ApimoduleClient';
+        $this->table       = 'adminapi_client';
+        $this->className   = 'AdminapiClient';
         $this->lang        = false;
         $this->addRowAction('edit');
         $this->addRowAction('delete');
@@ -112,7 +112,7 @@ class AdminApimoduleClientController extends ModuleAdminController
             }
 
             // Issue 3: check return value to catch UNIQUE KEY violations on client_id
-            if (!\Db::getInstance()->update('apimodule_client', $data, 'id = ' . (int) $this->object->id)) {
+            if (!\Db::getInstance()->update('adminapi_client', $data, 'id = ' . (int) $this->object->id)) {
                 $this->errors[] = 'Failed to update client. The Client ID may already be in use.';
                 return;
             }
@@ -120,7 +120,7 @@ class AdminApimoduleClientController extends ModuleAdminController
             // Create — auto-generate secret
             $rawSecret = bin2hex(random_bytes(32));
 
-            $inserted = \Db::getInstance()->insert('apimodule_client', [
+            $inserted = \Db::getInstance()->insert('adminapi_client', [
                 'client_id'     => pSQL($clientId),
                 'client_secret' => pSQL(password_hash($rawSecret, PASSWORD_BCRYPT)),
                 'client_name'   => pSQL($clientName),

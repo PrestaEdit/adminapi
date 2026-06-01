@@ -51,8 +51,8 @@ if (!defined('_DB_PREFIX_')) {
     define('_DB_PREFIX_', 'ps_');
 }
 
-if (!class_exists('Apimodule', false)) {
-    class Apimodule
+if (!class_exists('Adminapi', false)) {
+    class Adminapi
     {
         public static function getPrivateKeyPath(): string
         {

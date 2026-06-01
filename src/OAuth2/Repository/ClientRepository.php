@@ -19,7 +19,7 @@ class ClientRepository implements ClientRepositoryInterface
             return null;
         }
         $row = \Db::getInstance()->getRow(
-            'SELECT `client_name` FROM `' . _DB_PREFIX_ . 'apimodule_client`
+            'SELECT `client_name` FROM `' . _DB_PREFIX_ . 'adminapi_client`
              WHERE `client_id` = \'' . pSQL($clientIdentifier) . '\' AND `active` = 1'
         );
         if (!$row) {
@@ -43,7 +43,7 @@ class ClientRepository implements ClientRepositoryInterface
             return false;
         }
         $row = \Db::getInstance()->getRow(
-            'SELECT `client_secret` FROM `' . _DB_PREFIX_ . 'apimodule_client`
+            'SELECT `client_secret` FROM `' . _DB_PREFIX_ . 'adminapi_client`
              WHERE `client_id` = \'' . pSQL($clientIdentifier) . '\' AND `active` = 1'
         );
         if (!$row) {

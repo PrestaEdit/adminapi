@@ -40,7 +40,7 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
             static fn (ScopeEntityInterface $s): string => $s->getIdentifier(),
             $accessTokenEntity->getScopes()
         );
-        \Db::getInstance()->insert('apimodule_access_token', [
+        \Db::getInstance()->insert('adminapi_access_token', [
             'id'         => pSQL($accessTokenEntity->getIdentifier()),
             'client_id'  => pSQL($accessTokenEntity->getClient()->getIdentifier()),
             'scopes'     => pSQL(json_encode($scopes)),
@@ -59,7 +59,7 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
             return;
         }
         \Db::getInstance()->update(
-            'apimodule_access_token',
+            'adminapi_access_token',
             ['revoked' => 1],
             '`id` = \'' . pSQL($tokenId) . '\''
         );
@@ -75,7 +75,7 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
             return false;
         }
         $row = \Db::getInstance()->getRow(
-            'SELECT `revoked` FROM `' . _DB_PREFIX_ . 'apimodule_access_token`
+            'SELECT `revoked` FROM `' . _DB_PREFIX_ . 'adminapi_access_token`
              WHERE `id` = \'' . pSQL($tokenId) . '\''
         );
         if (!$row) {

@@ -9,11 +9,11 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require_once __DIR__ . '/vendor/autoload.php';
 }
 
-class Apimodule extends Module
+class Adminapi extends Module
 {
     public function __construct()
     {
-        $this->name = 'apimodule';
+        $this->name = 'adminapi';
         $this->tab = 'administration';
         $this->version = '1.0.0';
         $this->author = 'PrestaEdit';
@@ -45,12 +45,12 @@ class Apimodule extends Module
     {
         $base = ['fc' => 'module', 'module' => $this->name, 'controller' => 'api'];
         return [
-            'apimodule-token' => [
+            'adminapi-token' => [
                 'rule'     => 'admin-api/access_token',
                 'keywords' => [],
                 'params'   => $base,
             ],
-            'apimodule-sub-item' => [
+            'adminapi-sub-item' => [
                 'rule'     => 'admin-api/{resource}/{id}/{subresource}/{subid}',
                 'keywords' => [
                     'resource'    => ['regexp' => '[a-z][a-z0-9\-]+',  'param' => 'resource'],
@@ -60,7 +60,7 @@ class Apimodule extends Module
                 ],
                 'params'   => $base,
             ],
-            'apimodule-sub-collection' => [
+            'adminapi-sub-collection' => [
                 'rule'     => 'admin-api/{resource}/{id}/{subresource}',
                 'keywords' => [
                     'resource'    => ['regexp' => '[a-z][a-z0-9\-]+', 'param' => 'resource'],
@@ -69,7 +69,7 @@ class Apimodule extends Module
                 ],
                 'params'   => $base,
             ],
-            'apimodule-bulk' => [
+            'adminapi-bulk' => [
                 'rule'     => 'admin-api/{resource}/bulk-{action}',
                 'keywords' => [
                     'resource' => ['regexp' => '[a-z][a-z0-9\-]+', 'param' => 'resource'],
@@ -77,7 +77,7 @@ class Apimodule extends Module
                 ],
                 'params'   => $base,
             ],
-            'apimodule-item' => [
+            'adminapi-item' => [
                 'rule'     => 'admin-api/{resource}/{id}',
                 'keywords' => [
                     'resource' => ['regexp' => '[a-z][a-z0-9\-]+', 'param' => 'resource'],
@@ -85,7 +85,7 @@ class Apimodule extends Module
                 ],
                 'params'   => $base,
             ],
-            'apimodule-collection' => [
+            'adminapi-collection' => [
                 'rule'     => 'admin-api/{resource}',
                 'keywords' => [
                     'resource' => ['regexp' => '[a-z][a-z0-9\-]+', 'param' => 'resource'],
@@ -178,7 +178,7 @@ class Apimodule extends Module
         file_put_contents(self::getPublicKeyPath(), $details['key']);
 
         $encryptionKey = \Defuse\Crypto\Key::createNewRandomKey()->saveToAsciiSafeString();
-        \Configuration::updateValue('APIMODULE_ENCRYPTION_KEY', $encryptionKey);
+        \Configuration::updateValue('ADMINAPI_ENCRYPTION_KEY', $encryptionKey);
 
         return true;
     }
@@ -191,7 +191,7 @@ class Apimodule extends Module
                 unlink($path);
             }
         }
-        \Configuration::deleteByName('APIMODULE_ENCRYPTION_KEY');
+        \Configuration::deleteByName('ADMINAPI_ENCRYPTION_KEY');
         return true;
     }
 
@@ -201,7 +201,7 @@ class Apimodule extends Module
     {
         $tab = new \Tab();
         $tab->active = 1;
-        $tab->class_name = 'AdminApimoduleClient';
+        $tab->class_name = 'AdminAdminapiClient';
         $tab->module = $this->name;
         $parentId = (int) \Tab::getIdFromClassName('AdminParentStats');
         $tab->id_parent = $parentId ?: -1; // -1 = hidden if parent not found
@@ -214,7 +214,7 @@ class Apimodule extends Module
 
     private function uninstallTab(): bool
     {
-        $id = (int) \Tab::getIdFromClassName('AdminApimoduleClient');
+        $id = (int) \Tab::getIdFromClassName('AdminAdminapiClient');
         if ($id) {
             $tab = new \Tab($id);
             return (bool) $tab->delete();

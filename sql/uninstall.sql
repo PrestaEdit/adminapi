@@ -1,2 +1,2 @@
-DROP TABLE IF EXISTS `PREFIX_apimodule_access_token`;
-DROP TABLE IF EXISTS `PREFIX_apimodule_client`;
+DROP TABLE IF EXISTS `PREFIX_adminapi_access_token`;
+DROP TABLE IF EXISTS `PREFIX_adminapi_client`;

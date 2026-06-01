@@ -23,8 +23,8 @@ class AuthorizationServer
                 new ClientRepository(),
                 new AccessTokenRepository(),
                 new ScopeRepository(),
-                new CryptKey('file://' . \Apimodule::getPrivateKeyPath(), null, false),
-                Key::loadFromAsciiSafeString(\Configuration::get('APIMODULE_ENCRYPTION_KEY'))
+                new CryptKey('file://' . \Adminapi::getPrivateKeyPath(), null, false),
+                Key::loadFromAsciiSafeString(\Configuration::get('ADMINAPI_ENCRYPTION_KEY'))
             );
             $server->enableGrantType(
                 new ClientCredentialsGrant(),

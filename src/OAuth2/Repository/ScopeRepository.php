@@ -41,7 +41,7 @@ class ScopeRepository implements ScopeRepositoryInterface
             return $scopes; // unit test context: pass through
         }
         $clientRow = \Db::getInstance()->getRow(
-            'SELECT `scopes` FROM `' . _DB_PREFIX_ . 'apimodule_client`
+            'SELECT `scopes` FROM `' . _DB_PREFIX_ . 'adminapi_client`
              WHERE `client_id` = \'' . pSQL($clientEntity->getIdentifier()) . '\''
         );
         if (!$clientRow || !$clientRow['scopes']) {

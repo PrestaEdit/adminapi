@@ -50,25 +50,25 @@ Key Composer dependencies:
 
 ```bash
 # 1. Place the module in your PrestaShop modules directory
-cd /path/to/prestashop/modules/apimodule
+cd /path/to/prestashop/modules/adminapi
 
 # 2. Install PHP dependencies
 composer install --no-dev --optimize-autoloader
 
 # 3. Install the module (back-office or CLI)
-php bin/console prestashop:module install apimodule
+php bin/console prestashop:module install adminapi
 # …or via Back-office → Modules → Module Manager → Upload/Install
 ```
 
 On install the module automatically:
 
-1. Creates the SQL tables `PREFIX_apimodule_client` and `PREFIX_apimodule_access_token`.
+1. Creates the SQL tables `PREFIX_adminapi_client` and `PREFIX_adminapi_access_token`.
 2. Generates a 2048-bit RSA keypair in `var/keys/` (`private.key` / `public.key`), protected by an `.htaccess` (`Deny from all`).
-3. Stores a `defuse/php-encryption` key in `Configuration` under `APIMODULE_ENCRYPTION_KEY`.
+3. Stores a `defuse/php-encryption` key in `Configuration` under `ADMINAPI_ENCRYPTION_KEY`.
 4. Registers the `moduleRoutes` hook (exposes `/admin-api/*`).
 5. Adds the **API Manager** tab to the back-office.
 
-> ⚠️ The RSA private key and the encryption key are generated **per installation** and are never committed to git (see `.gitignore`). Back up `var/keys/` and the `APIMODULE_ENCRYPTION_KEY` config value if you need token continuity across migrations.
+> ⚠️ The RSA private key and the encryption key are generated **per installation** and are never committed to git (see `.gitignore`). Back up `var/keys/` and the `ADMINAPI_ENCRYPTION_KEY` config value if you need token continuity across migrations.
 
 Uninstalling drops the tables, removes the keys, deletes the config value, and removes the tab.
 
@@ -78,7 +78,7 @@ Uninstalling drops the tables, removes the keys, deletes the config value, and r
 
 ```
 HTTP request  →  hookModuleRoutes (/admin-api/*)
-              →  controllers/front/api.php  (ApimoduleApiModuleFrontController)
+              →  controllers/front/api.php  (AdminapiApiModuleFrontController)
                    │
                    ├─ POST /admin-api/access_token → AuthorizationServer (issue JWT)
                    │
@@ -315,7 +315,7 @@ Validation errors (`422`) add a `violations` map:
 }
 ```
 
-Internal errors are logged server-side (`error_log('[apimodule] …')`) and returned to the client as a generic `500` — implementation details are never leaked.
+Internal errors are logged server-side (`error_log('[adminapi] …')`) and returned to the client as a generic `500` — implementation details are never leaked.
 
 ---
 
@@ -359,7 +359,7 @@ There are two PHPUnit configs:
 1. Create `src/Resource/{Domain}/{Domain}Resource.php` extending `AbstractResource` and implementing `ResourceInterface`.
 2. Define `definition()` with the URI template, identifier key, and operations.
 3. Register the class in `ResourceRegistry::$resources`.
-4. Add the scope domain to the back-office scope list (`AdminApimoduleClientController::getAllScopes()`).
+4. Add the scope domain to the back-office scope list (`AdminAdminapiClientController::getAllScopes()`).
 
 Conventions enforced across all resources:
 
@@ -373,18 +373,18 @@ Conventions enforced across all resources:
 ## Project layout
 
 ```
-apimodule/
-├── apimodule.php                     # Module entry (install/uninstall, routes, keys)
+adminapi/
+├── adminapi.php                     # Module entry (install/uninstall, routes, keys)
 ├── composer.json
 ├── controllers/
 │   ├── front/api.php                 # Single front controller for /admin-api/*
-│   └── admin/AdminApimoduleClientController.php
+│   └── admin/AdminAdminapiClientController.php
 ├── sql/{install,uninstall}.sql
 ├── src/
 │   ├── OAuth2/                        # Servers, entities, repositories
 │   ├── Api/                           # Dispatcher, Request, Response, ShopContextResolver
 │   ├── Exception/                     # ResourceNotFound, Validation
-│   ├── Model/ApimoduleClient.php      # ObjectModel for the client table
+│   ├── Model/AdminapiClient.php      # ObjectModel for the client table
 │   └── Resource/                      # 31 resources + AbstractResource + ResourceRegistry
 ├── tests/
 │   ├── Unit/                          # stubbed, no PS

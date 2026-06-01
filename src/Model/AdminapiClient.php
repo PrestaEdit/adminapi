@@ -5,8 +5,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-if (!class_exists('ApimoduleClient')) {
-    class ApimoduleClient extends ObjectModel
+if (!class_exists('AdminapiClient')) {
+    class AdminapiClient extends ObjectModel
     {
         public $client_id;
         public $client_secret;
@@ -17,7 +17,7 @@ if (!class_exists('ApimoduleClient')) {
         public $date_upd;
 
         public static $definition = [
-            'table'   => 'apimodule_client',
+            'table'   => 'adminapi_client',
             'primary' => 'id',
             'fields'  => [
                 'client_id'     => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 80],

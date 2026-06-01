@@ -34,7 +34,7 @@ class ApiClientResource extends AbstractResource implements ResourceInterface
     {
         $row = \Db::getInstance()->getRow(
             'SELECT `id`, `client_id`, `client_name`, `scopes`, `active`, `date_add`, `date_upd`
-             FROM `' . _DB_PREFIX_ . 'apimodule_client`
+             FROM `' . _DB_PREFIX_ . 'adminapi_client`
              WHERE `id` = ' . (int) $id
         );
         if (!$row) {
@@ -47,7 +47,7 @@ class ApiClientResource extends AbstractResource implements ResourceInterface
     {
         $q = new \DbQuery();
         $q->select('id, client_id, client_name, scopes, active, date_add, date_upd');
-        $q->from('apimodule_client');
+        $q->from('adminapi_client');
 
         $total = $this->countQuery($q);
         $this->applySort($q, $filters, 'id', [
@@ -74,7 +74,7 @@ class ApiClientResource extends AbstractResource implements ResourceInterface
         $rawSecret = bin2hex(random_bytes(32));
         $scopes    = $data['scopes'] ?? [];
 
-        \Db::getInstance()->insert('apimodule_client', [
+        \Db::getInstance()->insert('adminapi_client', [
             'client_id'     => pSQL($clientId),
             'client_secret' => pSQL(password_hash($rawSecret, PASSWORD_BCRYPT)),
             'client_name'   => pSQL($data['clientName']),
@@ -94,7 +94,7 @@ class ApiClientResource extends AbstractResource implements ResourceInterface
     public function update(int $id, array $data, array $context): array
     {
         $existing = \Db::getInstance()->getRow(
-            'SELECT `id` FROM `' . _DB_PREFIX_ . 'apimodule_client` WHERE `id` = ' . (int) $id
+            'SELECT `id` FROM `' . _DB_PREFIX_ . 'adminapi_client` WHERE `id` = ' . (int) $id
         );
         if (!$existing) {
             throw new ResourceNotFoundException('ApiClient', $id);
@@ -108,7 +108,7 @@ class ApiClientResource extends AbstractResource implements ResourceInterface
             $updates['client_secret'] = pSQL(password_hash($data['clientSecret'], PASSWORD_BCRYPT));
         }
 
-        if (!\Db::getInstance()->update('apimodule_client', $updates, '`id` = ' . (int) $id)) {
+        if (!\Db::getInstance()->update('adminapi_client', $updates, '`id` = ' . (int) $id)) {
             throw new \RuntimeException('Failed to update API client.', 500);
         }
         return $this->get($id, $context);
@@ -117,12 +117,12 @@ class ApiClientResource extends AbstractResource implements ResourceInterface
     public function delete(int $id, array $context): void
     {
         $existing = \Db::getInstance()->getRow(
-            'SELECT `id` FROM `' . _DB_PREFIX_ . 'apimodule_client` WHERE `id` = ' . (int) $id
+            'SELECT `id` FROM `' . _DB_PREFIX_ . 'adminapi_client` WHERE `id` = ' . (int) $id
         );
         if (!$existing) {
             throw new ResourceNotFoundException('ApiClient', $id);
         }
-        if (!\Db::getInstance()->delete('apimodule_client', '`id` = ' . (int) $id)) {
+        if (!\Db::getInstance()->delete('adminapi_client', '`id` = ' . (int) $id)) {
             throw new \RuntimeException('Failed to delete API client.', 500);
         }
     }
@@ -132,10 +132,10 @@ class ApiClientResource extends AbstractResource implements ResourceInterface
         $ids = array_map('intval', $data['apiClientIds'] ?? []);
         foreach ($ids as $id) {
             $existing = \Db::getInstance()->getRow(
-                'SELECT `id` FROM `' . _DB_PREFIX_ . 'apimodule_client` WHERE `id` = ' . (int) $id
+                'SELECT `id` FROM `' . _DB_PREFIX_ . 'adminapi_client` WHERE `id` = ' . (int) $id
             );
             if ($existing) {
-                \Db::getInstance()->delete('apimodule_client', '`id` = ' . (int) $id);
+                \Db::getInstance()->delete('adminapi_client', '`id` = ' . (int) $id);
             }
         }
     }

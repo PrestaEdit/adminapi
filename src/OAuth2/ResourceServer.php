@@ -16,7 +16,7 @@ class ResourceServer
         if (self::$instance === null) {
             self::$instance = new LeagueResourceServer(
                 new AccessTokenRepository(),
-                new CryptKey('file://' . \Apimodule::getPublicKeyPath(), null, false)
+                new CryptKey('file://' . \Adminapi::getPublicKeyPath(), null, false)
             );
         }
         return self::$instance;

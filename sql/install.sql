@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `PREFIX_apimodule_client` (
+CREATE TABLE IF NOT EXISTS `PREFIX_adminapi_client` (
   `id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `client_id`     VARCHAR(80)  NOT NULL,
   `client_secret` VARCHAR(255) NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `PREFIX_apimodule_client` (
   UNIQUE KEY `uk_client_id` (`client_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `PREFIX_apimodule_access_token` (
+CREATE TABLE IF NOT EXISTS `PREFIX_adminapi_access_token` (
   `id`         VARCHAR(255) NOT NULL,
   `client_id`  VARCHAR(80)  NOT NULL,
   `scopes`     TEXT,
