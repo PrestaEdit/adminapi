@@ -40,6 +40,16 @@ jobs:
       - name: Install dependencies (from lock)
         uses: ramsey/composer-install@v3
 
+      - name: Generate ephemeral RSA keypair
+        # The module generates this keypair at install time (git-ignored).
+        # ResourceServer/AuthorizationServer read these files at construction,
+        # so the unit suite needs them present even though no real signing happens.
+        run: |
+          mkdir -p var/keys
+          openssl genrsa -out var/keys/private.key 2048
+          openssl rsa -in var/keys/private.key -pubout -out var/keys/public.key
+          chmod 600 var/keys/private.key
+
       - name: Run unit test suite
         # Integration suite (phpunit.integration.xml) is intentionally excluded:
         # it boots a live PrestaShop install (PS_ROOT) which CI does not provide.
