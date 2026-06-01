@@ -1,0 +1,12 @@
+{
+  "planPath": "docs/superpowers/plans/2026-05-29-prestashop-product-resource.md",
+  "tasks": [
+    {
+      "id": 27,
+      "subject": "Task 1 (Plan D): ProductResource",
+      "status": "completed",
+      "description": "**Goal:** Implémenter ProductResource — CRUD complet avec champs localisés, sans combinaisons.\n\n**Files:**\n- Create: `src/Resource/Product/ProductResource.php`\n- Modify: `src/Resource/ResourceRegistry.php`\n\n**Verify:** `vendor/bin/phpunit tests/Unit/ --testdox` → 0 failure\n\n```json:metadata\n{\"files\":[\"src/Resource/Product/ProductResource.php\",\"src/Resource/ResourceRegistry.php\"],\"verifyCommand\":\"vendor/bin/phpunit tests/Unit/ --testdox\",\"acceptanceCriteria\":[\"GET /products → 200 paginé\",\"GET /products/1 → 200 avec names localisé et price décimal\",\"POST /products sans names/linkRewrites/price → 422\",\"POST /products → 201\",\"PATCH /products/1 → 200\",\"DELETE /products/1 → 204\",\"DELETE /products/bulk-delete → 204\",\"tests/Unit/ passing\"]}\n```"
+    }
+  ],
+  "lastUpdated": "2026-05-29T18:00:00Z"
+}
