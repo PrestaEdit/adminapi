@@ -19,6 +19,11 @@ use PrestaEdit\ApiModule\Resource\Manufacturer\ManufacturerResource;
 use PrestaEdit\ApiModule\Resource\Supplier\SupplierResource;
 use PrestaEdit\ApiModule\Resource\Store\StoreResource;
 use PrestaEdit\ApiModule\Resource\Address\AddressResource;
+use PrestaEdit\ApiModule\Resource\AttributeGroup\AttributeGroupResource;
+use PrestaEdit\ApiModule\Resource\Attribute\AttributeResource;
+use PrestaEdit\ApiModule\Resource\Feature\FeatureResource;
+use PrestaEdit\ApiModule\Resource\FeatureValue\FeatureValueResource;
+use PrestaEdit\ApiModule\Resource\CustomerGroup\CustomerGroupResource;
 
 class ResourceRegistry
 {
@@ -40,6 +45,11 @@ class ResourceRegistry
         SupplierResource::class,
         StoreResource::class,
         AddressResource::class,
+        AttributeGroupResource::class,
+        AttributeResource::class,
+        FeatureResource::class,
+        FeatureValueResource::class,
+        CustomerGroupResource::class,
     ];
 
     /** @var array<string, array<string, array{0:string,1:string,2:string[]}>>|null Route table, built on first call */
