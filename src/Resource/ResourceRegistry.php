@@ -9,6 +9,10 @@ use PrestaEdit\ApiModule\Resource\Hook\HookResource;
 use PrestaEdit\ApiModule\Resource\TaxRulesGroup\TaxRulesGroupResource;
 use PrestaEdit\ApiModule\Resource\SearchEngine\SearchEngineResource;
 use PrestaEdit\ApiModule\Resource\SearchAlias\SearchAliasResource;
+use PrestaEdit\ApiModule\Resource\WebserviceKey\WebserviceKeyResource;
+use PrestaEdit\ApiModule\Resource\Title\TitleResource;
+use PrestaEdit\ApiModule\Resource\Profile\ProfileResource;
+use PrestaEdit\ApiModule\Resource\Tax\TaxResource;
 
 class ResourceRegistry
 {
@@ -20,6 +24,10 @@ class ResourceRegistry
         TaxRulesGroupResource::class,
         SearchEngineResource::class,
         SearchAliasResource::class,
+        WebserviceKeyResource::class,
+        TitleResource::class,
+        ProfileResource::class,
+        TaxResource::class,
     ];
 
     /** @var array<string, array<string, array{0:string,1:string,2:string[]}>>|null Route table, built on first call */
