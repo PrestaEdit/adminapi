@@ -13,6 +13,10 @@ use PrestaEdit\ApiModule\Resource\WebserviceKey\WebserviceKeyResource;
 use PrestaEdit\ApiModule\Resource\Title\TitleResource;
 use PrestaEdit\ApiModule\Resource\Profile\ProfileResource;
 use PrestaEdit\ApiModule\Resource\Tax\TaxResource;
+use PrestaEdit\ApiModule\Resource\Country\CountryResource;
+use PrestaEdit\ApiModule\Resource\Tab\TabResource;
+use PrestaEdit\ApiModule\Resource\Manufacturer\ManufacturerResource;
+use PrestaEdit\ApiModule\Resource\Supplier\SupplierResource;
 
 class ResourceRegistry
 {
@@ -28,6 +32,10 @@ class ResourceRegistry
         TitleResource::class,
         ProfileResource::class,
         TaxResource::class,
+        CountryResource::class,
+        TabResource::class,
+        ManufacturerResource::class,
+        SupplierResource::class,
     ];
 
     /** @var array<string, array<string, array{0:string,1:string,2:string[]}>>|null Route table, built on first call */
