@@ -5,6 +5,7 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use PrestaEdit\ApiModule\OAuth2\AuthorizationServer;
+use PrestaEdit\ApiModule\Api\OpenApiGenerator;
 
 class AdminapiApiModuleFrontController extends ModuleFrontController
 {
@@ -48,6 +49,22 @@ class AdminapiApiModuleFrontController extends ModuleFrontController
                     ->withHeader('Content-Type', 'application/json')
                     ->withBody($stream);
             }
+            $this->sendPsrResponse($response);
+            return;
+        }
+
+        // OpenAPI document — public (describes structure only, no data)
+        $openapiSuffix = '/admin-api/openapi.json';
+        if (substr($uri, -strlen($openapiSuffix)) === $openapiSuffix) {
+            $json   = (string) json_encode(
+                (new OpenApiGenerator())->generate(),
+                JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
+            );
+            $stream = $factory->createStream($json);
+            $response = $psrResponse
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($stream);
             $this->sendPsrResponse($response);
             return;
         }

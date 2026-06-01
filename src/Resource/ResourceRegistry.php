@@ -120,6 +120,26 @@ class ResourceRegistry
         return in_array($scope, self::getAllScopes(), true);
     }
 
+    /**
+     * All registered resource FQCNs, in registration order.
+     *
+     * @return string[]
+     */
+    public static function getResourceClasses(): array
+    {
+        return self::$resources;
+    }
+
+    /**
+     * Deduplicated list of every scope declared across all resources.
+     *
+     * @return string[]
+     */
+    public static function allScopes(): array
+    {
+        return self::getAllScopes();
+    }
+
     public static function reset(): void
     {
         self::$routeTable = null;

@@ -20,6 +20,7 @@ The **adminapi** module (technical name `adminapi`, display name *Admin API Modu
 - [Architecture](#architecture)
 - [Authentication](#authentication)
 - [Making requests](#making-requests)
+- [OpenAPI specification](#openapi-specification)
 - [Resources](#resources)
 - [Multi-shop](#multi-shop)
 - [Response & error format](#response--error-format)
@@ -214,6 +215,18 @@ curl -X DELETE https://shop/admin-api/zones/bulk-delete \
   -H 'Authorization: Bearer …' -H 'Content-Type: application/json' \
   -d '{"zoneIds":[3,4,5]}'
 ```
+
+---
+
+## OpenAPI specification
+
+A live OpenAPI 3.0 document describing every resource, operation, required scope, and the OAuth2 flow is generated from the resource registry and served — without authentication — at:
+
+```
+GET /admin-api/openapi.json
+```
+
+Import it into Swagger UI, Postman, or Insomnia to explore the API. The document is always in sync with the registered resources (it is built at request time from each resource's `definition()`).
 
 ---
 

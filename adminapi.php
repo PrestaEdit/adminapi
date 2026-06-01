@@ -50,6 +50,11 @@ class Adminapi extends Module
                 'keywords' => [],
                 'params'   => $base,
             ],
+            'adminapi-openapi' => [
+                'rule'     => 'admin-api/openapi.json',
+                'keywords' => [],
+                'params'   => $base,
+            ],
             'adminapi-sub-item' => [
                 'rule'     => 'admin-api/{resource}/{id}/{subresource}/{subid}',
                 'keywords' => [
