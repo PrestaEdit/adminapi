@@ -4,13 +4,16 @@ declare(strict_types=1);
 namespace PrestaEdit\ApiModule\Resource;
 
 use PrestaEdit\ApiModule\Resource\Contact\ContactResource;
+use PrestaEdit\ApiModule\Resource\Zone\ZoneResource;
+use PrestaEdit\ApiModule\Resource\Hook\HookResource;
 
 class ResourceRegistry
 {
     /** @var string[] All registered resource classes */
     private static array $resources = [
         ContactResource::class,
-        // Other resources added in future tasks
+        ZoneResource::class,
+        HookResource::class,
     ];
 
     /** @var array<string, array<string, array{0:string,1:string,2:string[]}>>|null Route table, built on first call */
