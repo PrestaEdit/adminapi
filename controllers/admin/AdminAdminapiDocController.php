@@ -20,9 +20,6 @@ use PrestaEdit\ApiModule\Api\OpenApiGenerator;
  */
 class AdminAdminapiDocController extends ModuleAdminController
 {
-    /** Pinned swagger-ui-dist version served from the unpkg CDN. */
-    private const SWAGGER_UI_VERSION = '5.17.14';
-
     public function __construct()
     {
         $this->bootstrap = true;
@@ -44,23 +41,26 @@ class AdminAdminapiDocController extends ModuleAdminController
         if (!headers_sent()) {
             header('Content-Type: text/html; charset=utf-8');
         }
-        echo $this->renderSwaggerPage($spec);
+        // Same-origin, version-pinned assets bundled in the module — the same
+        // approach as the official API Platform swagger UI (no external CDN).
+        $assets = $this->module->getPathUri() . 'views/swagger-ui/';
+        echo $this->renderSwaggerPage($spec, $assets);
         exit;
     }
 
-    private function renderSwaggerPage(string $specJson): string
+    private function renderSwaggerPage(string $specJson, string $assets): string
     {
-        $v = self::SWAGGER_UI_VERSION;
+        $assets = htmlspecialchars($assets, ENT_QUOTES);
 
         return '<!DOCTYPE html>'
             . '<html lang="en"><head><meta charset="UTF-8">'
             . '<meta name="robots" content="noindex,nofollow">'
             . '<title>Admin API — Documentation</title>'
-            . '<link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@' . $v . '/swagger-ui.css">'
+            . '<link rel="stylesheet" href="' . $assets . 'swagger-ui.css">'
             . '<style>body{margin:0;background:#fafafa}</style></head>'
             . '<body><div id="swagger-ui"></div>'
-            . '<script src="https://unpkg.com/swagger-ui-dist@' . $v . '/swagger-ui-bundle.js" crossorigin></script>'
-            . '<script src="https://unpkg.com/swagger-ui-dist@' . $v . '/swagger-ui-standalone-preset.js" crossorigin></script>'
+            . '<script src="' . $assets . 'swagger-ui-bundle.js"></script>'
+            . '<script src="' . $assets . 'swagger-ui-standalone-preset.js"></script>'
             . '<script>window.onload=function(){window.ui=SwaggerUIBundle({'
             . 'spec:' . $specJson . ','
             . 'dom_id:"#swagger-ui",deepLinking:true,'
