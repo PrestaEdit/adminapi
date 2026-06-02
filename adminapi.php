@@ -44,58 +44,68 @@ class Adminapi extends Module
     public function hookModuleRoutes(): array
     {
         $base = ['fc' => 'module', 'module' => $this->name, 'controller' => 'api'];
+        // NOTE: PrestaShop's Dispatcher::loadRoutes() requires each route to
+        // expose ALL of 'controller', 'rule', 'keywords' and 'params' at the
+        // top level — a route missing any one of them is silently skipped.
         return [
             'adminapi-token' => [
-                'rule'     => 'admin-api/access_token',
-                'keywords' => [],
-                'params'   => $base,
+                'controller' => 'api',
+                'rule'       => 'admin-api/access_token',
+                'keywords'   => [],
+                'params'     => $base,
             ],
             'adminapi-openapi' => [
-                'rule'     => 'admin-api/openapi.json',
-                'keywords' => [],
-                'params'   => $base,
+                'controller' => 'api',
+                'rule'       => 'admin-api/openapi.json',
+                'keywords'   => [],
+                'params'     => $base,
             ],
             'adminapi-sub-item' => [
-                'rule'     => 'admin-api/{resource}/{id}/{subresource}/{subid}',
-                'keywords' => [
+                'controller' => 'api',
+                'rule'       => 'admin-api/{resource}/{id}/{subresource}/{subid}',
+                'keywords'   => [
                     'resource'    => ['regexp' => '[a-z][a-z0-9\-]+',  'param' => 'resource'],
                     'id'          => ['regexp' => '[0-9]+',             'param' => 'id'],
                     'subresource' => ['regexp' => '[a-z][a-z0-9\-]+',  'param' => 'subresource'],
                     'subid'       => ['regexp' => '[0-9]+',             'param' => 'subid'],
                 ],
-                'params'   => $base,
+                'params'     => $base,
             ],
             'adminapi-sub-collection' => [
-                'rule'     => 'admin-api/{resource}/{id}/{subresource}',
-                'keywords' => [
+                'controller' => 'api',
+                'rule'       => 'admin-api/{resource}/{id}/{subresource}',
+                'keywords'   => [
                     'resource'    => ['regexp' => '[a-z][a-z0-9\-]+', 'param' => 'resource'],
                     'id'          => ['regexp' => '[0-9]+',            'param' => 'id'],
                     'subresource' => ['regexp' => '[a-z][a-z0-9\-]+', 'param' => 'subresource'],
                 ],
-                'params'   => $base,
+                'params'     => $base,
             ],
             'adminapi-bulk' => [
-                'rule'     => 'admin-api/{resource}/bulk-{action}',
-                'keywords' => [
+                'controller' => 'api',
+                'rule'       => 'admin-api/{resource}/bulk-{action}',
+                'keywords'   => [
                     'resource' => ['regexp' => '[a-z][a-z0-9\-]+', 'param' => 'resource'],
                     'action'   => ['regexp' => '[a-z\-]+',          'param' => 'action'],
                 ],
-                'params'   => $base,
+                'params'     => $base,
             ],
             'adminapi-item' => [
-                'rule'     => 'admin-api/{resource}/{id}',
-                'keywords' => [
+                'controller' => 'api',
+                'rule'       => 'admin-api/{resource}/{id}',
+                'keywords'   => [
                     'resource' => ['regexp' => '[a-z][a-z0-9\-]+', 'param' => 'resource'],
                     'id'       => ['regexp' => '[0-9]+',            'param' => 'id'],
                 ],
-                'params'   => $base,
+                'params'     => $base,
             ],
             'adminapi-collection' => [
-                'rule'     => 'admin-api/{resource}',
-                'keywords' => [
+                'controller' => 'api',
+                'rule'       => 'admin-api/{resource}',
+                'keywords'   => [
                     'resource' => ['regexp' => '[a-z][a-z0-9\-]+', 'param' => 'resource'],
                 ],
-                'params'   => $base,
+                'params'     => $base,
             ],
         ];
     }
