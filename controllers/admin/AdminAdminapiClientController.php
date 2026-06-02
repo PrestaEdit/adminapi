@@ -123,24 +123,6 @@ class AdminAdminapiClientController extends ModuleAdminController
         $this->context->cookie->write();
     }
 
-    /**
-     * Add a "Regenerate secret" button to the toolbar when editing a client.
-     */
-    public function initPageHeaderToolbar()
-    {
-        parent::initPageHeaderToolbar();
-
-        $id = (int) \Tools::getValue('id');
-        if ($this->display === 'edit' && $id > 0) {
-            $this->page_header_toolbar_btn['regenerate_secret'] = [
-                'href' => self::$currentIndex . '&id=' . $id . '&regenerateSecret&token=' . $this->token,
-                'desc' => 'Regenerate secret',
-                'icon' => 'process-icon-refresh',
-                'js'   => "return confirm('Generate a new secret? The current secret will stop working immediately.');",
-            ];
-        }
-    }
-
     public function renderForm(): string
     {
         $allScopes    = $this->getAllScopes();
@@ -184,6 +166,21 @@ class AdminAdminapiClientController extends ModuleAdminController
             'submit' => ['title' => 'Save'],
         ];
 
+        // Offer secret regeneration only for an existing client. $this->object
+        // is loaded by initContent() before renderForm() runs.
+        if ($this->object && $this->object->id) {
+            $this->fields_form['buttons'] = [
+                [
+                    'title' => 'Regenerate secret',
+                    'icon'  => 'process-icon-refresh',
+                    'href'  => self::$currentIndex . '&id=' . (int) $this->object->id
+                        . '&regenerateSecret&token=' . $this->token,
+                    'js'    => "return confirm('Generate a new secret? "
+                        . "The current secret will stop working immediately.');",
+                ],
+            ];
+        }
+
         return parent::renderForm();
     }
 
@@ -210,10 +207,22 @@ class AdminAdminapiClientController extends ModuleAdminController
             }
         }
 
-        $isUpdate = ($this->object && $this->object->id);
+        // We override the parent processSave(), which is what normally loads
+        // $this->object — so it is not populated here. Resolve the edited
+        // record from the request identifier the same way PrestaShop does
+        // ($this->id_object is set from Tools::getValue($this->identifier) in
+        // initProcess()). Without this, every save fell through to add() and
+        // hit the UNIQUE client_id constraint ("Duplicate entry").
+        $idClient = (int) $this->id_object;
+        $isUpdate = $idClient > 0;
 
         /** @var \AdminapiClient $client */
-        $client = $isUpdate ? new \AdminapiClient((int) $this->object->id) : new \AdminapiClient();
+        $client = new \AdminapiClient($isUpdate ? $idClient : null);
+
+        if ($isUpdate && !\Validate::isLoadedObject($client)) {
+            $this->errors[] = 'Client not found.';
+            return;
+        }
 
         $client->client_id   = $clientId;
         $client->client_name = $clientName;
