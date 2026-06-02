@@ -28,6 +28,31 @@ class AdminAdminapiClientController extends ModuleAdminController
         ];
     }
 
+    /**
+     * Surface the one-time client secret stashed by processSave() across the
+     * Post/Redirect/Get redirect, then clear it so it is only ever shown once.
+     */
+    public function init()
+    {
+        parent::init();
+
+        $flash = $this->context->cookie->adminapi_new_secret;
+        if ($flash) {
+            unset($this->context->cookie->adminapi_new_secret);
+            $this->context->cookie->write();
+
+            $data = json_decode((string) $flash, true);
+            if (is_array($data) && isset($data['client_id'], $data['secret'])) {
+                $this->confirmations[] = sprintf(
+                    'API client created. Client ID: <strong>%s</strong><br>'
+                    . 'Secret (shown once only — copy it now): <code>%s</code>',
+                    htmlspecialchars((string) $data['client_id']),
+                    htmlspecialchars((string) $data['secret'])
+                );
+            }
+        }
+    }
+
     public function renderForm(): string
     {
         $allScopes    = $this->getAllScopes();
@@ -117,6 +142,8 @@ class AdminAdminapiClientController extends ModuleAdminController
                 $this->errors[] = 'Failed to update client. The Client ID may already be in use.';
                 return;
             }
+
+            $conf = 4; // Successful update
         } else {
             // Create — auto-generate secret
             $rawSecret = bin2hex(random_bytes(32));
@@ -136,15 +163,21 @@ class AdminAdminapiClientController extends ModuleAdminController
                 return;
             }
 
-            $this->confirmations[] = sprintf(
-                'Client created. Client ID: <strong>%s</strong><br>'
-                . 'Secret (shown once only): <code>%s</code>',
-                htmlspecialchars($clientId),
-                htmlspecialchars($rawSecret)
-            );
+            // The one-time secret cannot survive the Post/Redirect/Get redirect
+            // via $this->confirmations: PrestaShop redirects (302) before the
+            // template renders, so the array is discarded. Stash it in the
+            // employee cookie instead; init() surfaces it on the next request
+            // and clears it.
+            $this->context->cookie->adminapi_new_secret = json_encode([
+                'client_id' => $clientId,
+                'secret'    => $rawSecret,
+            ]);
+            $this->context->cookie->write();
+
+            $conf = 3; // Successful creation
         }
 
-        $this->redirect_after = self::$currentIndex . '&token=' . $this->token;
+        $this->redirect_after = self::$currentIndex . '&conf=' . $conf . '&token=' . $this->token;
     }
 
     private function renderScopesCheckboxes(array $allScopes, array $selectedScopes): string
