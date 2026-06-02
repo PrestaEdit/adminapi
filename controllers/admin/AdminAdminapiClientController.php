@@ -11,6 +11,7 @@ class AdminAdminapiClientController extends ModuleAdminController
     {
         $this->table       = 'adminapi_client';
         $this->className   = 'AdminapiClient';
+        $this->identifier  = 'id';
         $this->lang        = false;
         $this->addRowAction('edit');
         $this->addRowAction('delete');
