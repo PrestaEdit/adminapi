@@ -15,7 +15,7 @@ class Adminapi extends Module
     {
         $this->name = 'adminapi';
         $this->tab = 'administration';
-        $this->version = '1.1.0';
+        $this->version = '1.2.0';
         $this->author = 'PrestaEdit';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7.6.0', 'max' => '8.99.99'];
@@ -223,7 +223,9 @@ class Adminapi extends Module
 
     private function installTab(): bool
     {
-        $parentId = (int) \Tab::getIdFromClassName('AdminParentStats') ?: -1;
+        // Live under "Advanced Parameters", next to Webservice — same place as
+        // PrestaShop's own admin API.
+        $parentId = (int) \Tab::getIdFromClassName('AdminAdvancedParameters') ?: -1;
 
         return $this->addTab('AdminAdminapiClient', 'API Manager', $parentId)
             && $this->addTab('AdminAdminapiDoc', 'API Documentation', $parentId);
