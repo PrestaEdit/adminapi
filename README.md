@@ -83,12 +83,13 @@ Uninstalling drops the tables, removes the keys, deletes the config value, and r
 HTTP request  →  hookModuleRoutes (/admin-api/*)
               →  controllers/front/api.php  (AdminapiApiModuleFrontController)
                    │
-                   ├─ POST /admin-api/access_token → AuthorizationServer (issue JWT)
+                   ├─ POST /admin-api/access_token → AuthorizationServer (issue JWT — public)
                    │
-                   ├─ GET  /admin-api/openapi.json  → OpenApiGenerator (unauthenticated)
+                   ├─ GET  /admin-api/openapi.json  → OpenApiGenerator (Bearer token required)
                    │
                    └─ everything else → Api\Dispatcher
                           1. validate Bearer token  (ResourceServer)
+                             └─ GET /api-client/infos short-circuits here (self-introspection)
                           2. resolve route           (ResourceRegistry)
                           3. check scope
                           4. resolve shop context    (ShopContextResolver)
@@ -222,13 +223,23 @@ curl -X DELETE https://shop/admin-api/zones/bulk-delete \
 
 ## OpenAPI specification
 
-A live OpenAPI 3.0 document describing every resource, operation, required scope, and the OAuth2 flow is generated from the resource registry and served — without authentication — at:
+A live OpenAPI 3.0 document describing every resource, operation, required scope, and the OAuth2 flow is generated from the resource registry (built at request time from each resource's `definition()`, always in sync) and served at:
 
 ```
 GET /admin-api/openapi.json
 ```
 
-Import it into Swagger UI, Postman, or Insomnia to explore the API. The document is always in sync with the registered resources (it is built at request time from each resource's `definition()`).
+**Authentication required.** Like the official PrestaShop admin API, only `POST /admin-api/access_token` is public — every other `/admin-api/*` endpoint, including the spec, requires a valid `Authorization: Bearer <token>`. Without one it returns `401`. Fetch it with a token to import into Postman/Insomnia, or use the built-in Swagger UI below.
+
+### Interactive documentation (Swagger UI)
+
+A browsable Swagger UI is available in the **back office**, behind the employee login — mirroring the official admin context (which enables `swagger_ui` only for authenticated admins):
+
+```
+Back office → Stats → API Documentation   (controller: AdminAdminapiDoc)
+```
+
+The page bundles the Swagger UI assets locally (`views/swagger-ui/`, no external CDN) and inlines the spec, so it needs no API token to render. Use the **Authorize** button (client credentials → `client_id` / `client_secret`) then **Try it out** to call endpoints live.
 
 ---
 
