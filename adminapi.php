@@ -15,7 +15,7 @@ class Adminapi extends Module
     {
         $this->name = 'adminapi';
         $this->tab = 'administration';
-        $this->version = '1.0.0';
+        $this->version = '1.1.0';
         $this->author = 'PrestaEdit';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7.6.0', 'max' => '8.99.99'];
@@ -223,26 +223,40 @@ class Adminapi extends Module
 
     private function installTab(): bool
     {
+        $parentId = (int) \Tab::getIdFromClassName('AdminParentStats') ?: -1;
+
+        return $this->addTab('AdminAdminapiClient', 'API Manager', $parentId)
+            && $this->addTab('AdminAdminapiDoc', 'API Documentation', $parentId);
+    }
+
+    /** Create (or skip if already present) a back-office tab for a controller. */
+    public function addTab(string $className, string $label, int $parentId): bool
+    {
+        if ((int) \Tab::getIdFromClassName($className) > 0) {
+            return true; // idempotent — already installed
+        }
+
         $tab = new \Tab();
         $tab->active = 1;
-        $tab->class_name = 'AdminAdminapiClient';
+        $tab->class_name = $className;
         $tab->module = $this->name;
-        $parentId = (int) \Tab::getIdFromClassName('AdminParentStats');
-        $tab->id_parent = $parentId ?: -1; // -1 = hidden if parent not found
+        $tab->id_parent = $parentId;
         $tab->name = [];
         foreach (\Language::getLanguages(true) as $lang) {
-            $tab->name[$lang['id_lang']] = 'API Manager';
+            $tab->name[$lang['id_lang']] = $label;
         }
         return (bool) $tab->add();
     }
 
     private function uninstallTab(): bool
     {
-        $id = (int) \Tab::getIdFromClassName('AdminAdminapiClient');
-        if ($id) {
-            $tab = new \Tab($id);
-            return (bool) $tab->delete();
+        $ok = true;
+        foreach (['AdminAdminapiClient', 'AdminAdminapiDoc'] as $className) {
+            $id = (int) \Tab::getIdFromClassName($className);
+            if ($id) {
+                $ok = (new \Tab($id))->delete() && $ok;
+            }
         }
-        return true;
+        return $ok;
     }
 }

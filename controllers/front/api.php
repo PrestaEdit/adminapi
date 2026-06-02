@@ -5,6 +5,7 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use PrestaEdit\ApiModule\OAuth2\AuthorizationServer;
+use PrestaEdit\ApiModule\OAuth2\ResourceServer;
 use PrestaEdit\ApiModule\Api\OpenApiGenerator;
 
 class AdminapiApiModuleFrontController extends ModuleFrontController
@@ -56,6 +57,17 @@ class AdminapiApiModuleFrontController extends ModuleFrontController
         // OpenAPI document — public (describes structure only, no data)
         $openapiSuffix = '/admin-api/openapi.json';
         if (substr($uri, -strlen($openapiSuffix)) === $openapiSuffix) {
+            // Like the official admin-api firewall, only /access_token is
+            // public — the spec requires a valid Bearer token. The browsable
+            // Swagger UI lives in the back office (AdminAdminapiDoc), behind
+            // the employee login, and inlines the spec instead of fetching it.
+            try {
+                ResourceServer::getInstance()->validateAuthenticatedRequest($psrRequest);
+            } catch (OAuthServerException $e) {
+                $this->sendPsrResponse($e->generateHttpResponse($psrResponse));
+                return;
+            }
+
             $json   = (string) json_encode(
                 (new OpenApiGenerator())->generate(),
                 JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
