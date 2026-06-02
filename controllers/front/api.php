@@ -59,7 +59,7 @@ class AdminapiApiModuleFrontController extends ModuleFrontController
         if (substr($uri, -strlen($openapiSuffix)) === $openapiSuffix) {
             // Like the official admin-api firewall, only /access_token is
             // public — the spec requires a valid Bearer token. The browsable
-            // Swagger UI lives in the back office (AdminAdminapiDoc), behind
+            // Swagger UI lives in the back office (AdminAdminAPI, ?apidoc=1), behind
             // the employee login, and inlines the spec instead of fetching it.
             try {
                 ResourceServer::getInstance()->validateAuthenticatedRequest($psrRequest);

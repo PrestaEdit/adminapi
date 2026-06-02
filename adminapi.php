@@ -15,7 +15,7 @@ class Adminapi extends Module
     {
         $this->name = 'adminapi';
         $this->tab = 'administration';
-        $this->version = '1.2.0';
+        $this->version = '1.3.0';
         $this->author = 'PrestaEdit';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7.6.0', 'max' => '8.99.99'];
@@ -223,12 +223,11 @@ class Adminapi extends Module
 
     private function installTab(): bool
     {
-        // Live under "Advanced Parameters", next to Webservice — same place as
-        // PrestaShop's own admin API.
+        // Single tab named like PrestaShop's own admin API (AdminAdminAPI),
+        // under "Advanced Parameters" next to Webservice.
         $parentId = (int) \Tab::getIdFromClassName('AdminAdvancedParameters') ?: -1;
 
-        return $this->addTab('AdminAdminapiClient', 'API Manager', $parentId)
-            && $this->addTab('AdminAdminapiDoc', 'API Documentation', $parentId);
+        return $this->addTab('AdminAdminAPI', 'Admin API', $parentId);
     }
 
     /** Create (or skip if already present) a back-office tab for a controller. */
@@ -253,7 +252,9 @@ class Adminapi extends Module
     private function uninstallTab(): bool
     {
         $ok = true;
-        foreach (['AdminAdminapiClient', 'AdminAdminapiDoc'] as $className) {
+        // 'AdminAdminAPI' is current; the others are pre-1.3.0 names cleaned up
+        // for safety in case an old install is being removed.
+        foreach (['AdminAdminAPI', 'AdminAdminapiClient', 'AdminAdminapiDoc'] as $className) {
             $id = (int) \Tab::getIdFromClassName($className);
             if ($id) {
                 $ok = (new \Tab($id))->delete() && $ok;

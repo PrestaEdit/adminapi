@@ -69,7 +69,7 @@ On install the module automatically:
 2. Generates a 2048-bit RSA keypair in `var/keys/` (`private.key` / `public.key`), protected by an `.htaccess` (`Deny from all`).
 3. Stores a `defuse/php-encryption` key in `Configuration` under `ADMINAPI_ENCRYPTION_KEY`.
 4. Registers the `moduleRoutes` hook (exposes `/admin-api/*`).
-5. Adds the **API Manager** tab to the back-office.
+5. Adds the **Admin API** tab (`AdminAdminAPI`) under **Advanced Parameters**, next to Webservice.
 
 > ⚠️ The RSA private key and the encryption key are generated **per installation** and are never committed to git (see `.gitignore`). Back up `var/keys/` and the `ADMINAPI_ENCRYPTION_KEY` config value if you need token continuity across migrations.
 
@@ -236,7 +236,8 @@ GET /admin-api/openapi.json
 A browsable Swagger UI is available in the **back office**, behind the employee login — mirroring the official admin context (which enables `swagger_ui` only for authenticated admins):
 
 ```
-Back office → Stats → API Documentation   (controller: AdminAdminapiDoc)
+Back office → Advanced Parameters → Admin API → "API documentation" button
+(controller: AdminAdminAPI, ?apidoc=1)
 ```
 
 The page bundles the Swagger UI assets locally (`views/swagger-ui/`, no external CDN) and inlines the spec, so it needs no API token to render. Use the **Authorize** button (client credentials → `client_id` / `client_secret`) then **Try it out** to call endpoints live.
@@ -349,7 +350,7 @@ Internal errors are logged server-side (`error_log('[adminapi] …')`) and retur
 
 ## Back-office: managing API clients
 
-**Back-office → (Stats parent) → API Manager**
+**Back-office → Advanced Parameters → Admin API**
 
 - List, create, edit, enable/disable and delete OAuth2 clients.
 - On creation a random `client_id` and `client_secret` are generated; the secret is displayed **once** and stored as a bcrypt hash.
@@ -387,7 +388,7 @@ There are two PHPUnit configs:
 1. Create `src/Resource/{Domain}/{Domain}Resource.php` extending `AbstractResource` and implementing `ResourceInterface`.
 2. Define `definition()` with the URI template, identifier key, and operations.
 3. Register the class in `ResourceRegistry::$resources`.
-4. Add the scope domain to the back-office scope list (`AdminAdminapiClientController::getAllScopes()`).
+4. Add the scope domain to the back-office scope list (`AdminAdminAPIController::getAllScopes()`).
 
 Conventions enforced across all resources:
 
@@ -406,7 +407,7 @@ adminapi/
 ├── composer.json
 ├── controllers/
 │   ├── front/api.php                 # Single front controller for /admin-api/*
-│   └── admin/AdminAdminapiClientController.php
+│   └── admin/AdminAdminAPIController.php   # clients list/form + Swagger UI (?apidoc=1)
 ├── sql/{install,uninstall}.sql
 ├── src/
 │   ├── OAuth2/                        # Servers, entities, repositories
