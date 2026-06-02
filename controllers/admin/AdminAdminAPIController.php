@@ -5,7 +5,15 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class AdminAdminapiClientController extends ModuleAdminController
+use PrestaEdit\ApiModule\Api\OpenApiGenerator;
+
+/**
+ * Single back-office controller for the Admin API, named after PrestaShop's
+ * own admin API tab (AdminAdminAPI, under Advanced Parameters). Manages API
+ * clients and also serves the bundled Swagger UI as a secondary action — so a
+ * single menu entry covers both, mirroring the core module.
+ */
+class AdminAdminAPIController extends ModuleAdminController
 {
     public function __construct()
     {
@@ -18,6 +26,11 @@ class AdminAdminapiClientController extends ModuleAdminController
         $this->bootstrap   = true;
 
         parent::__construct();
+
+        $autoload = _PS_MODULE_DIR_ . 'adminapi/vendor/autoload.php';
+        if (file_exists($autoload)) {
+            require_once $autoload;
+        }
 
         $this->fields_list = [
             'id'          => ['title' => 'ID',       'align' => 'center', 'class' => 'fixed-width-xs'],
@@ -55,6 +68,63 @@ class AdminAdminapiClientController extends ModuleAdminController
                 );
             }
         }
+    }
+
+    /**
+     * Serve the bundled Swagger UI when ?apidoc=1, otherwise the normal client
+     * list/form. Behind the back-office login + token; the spec is inlined so
+     * no token-protected fetch is needed.
+     */
+    public function initContent()
+    {
+        if (\Tools::getValue('apidoc')) {
+            $spec = (string) json_encode(
+                (new OpenApiGenerator())->generate(),
+                JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+            );
+            if (!headers_sent()) {
+                header('Content-Type: text/html; charset=utf-8');
+            }
+            echo $this->renderSwaggerPage($spec, $this->module->getPathUri() . 'views/swagger-ui/');
+            exit;
+        }
+
+        parent::initContent();
+    }
+
+    /** Add an "API documentation" button on the client list toolbar. */
+    public function initPageHeaderToolbar()
+    {
+        parent::initPageHeaderToolbar();
+
+        if (!in_array($this->display, ['edit', 'add', 'view'], true)) {
+            $this->page_header_toolbar_btn['apidoc'] = [
+                'href' => self::$currentIndex . '&apidoc=1&token=' . $this->token,
+                'desc' => 'API documentation',
+                'icon' => 'process-icon-book',
+            ];
+        }
+    }
+
+    private function renderSwaggerPage(string $specJson, string $assets): string
+    {
+        $assets = htmlspecialchars($assets, ENT_QUOTES);
+
+        return '<!DOCTYPE html>'
+            . '<html lang="en"><head><meta charset="UTF-8">'
+            . '<meta name="robots" content="noindex,nofollow">'
+            . '<title>Admin API — Documentation</title>'
+            . '<link rel="stylesheet" href="' . $assets . 'swagger-ui.css">'
+            . '<style>body{margin:0;background:#fafafa}</style></head>'
+            . '<body><div id="swagger-ui"></div>'
+            . '<script src="' . $assets . 'swagger-ui-bundle.js"></script>'
+            . '<script src="' . $assets . 'swagger-ui-standalone-preset.js"></script>'
+            . '<script>window.onload=function(){window.ui=SwaggerUIBundle({'
+            . 'spec:' . $specJson . ','
+            . 'dom_id:"#swagger-ui",deepLinking:true,'
+            . 'presets:[SwaggerUIBundle.presets.apis,SwaggerUIStandalonePreset],'
+            . 'plugins:[SwaggerUIBundle.plugins.DownloadUrl],layout:"StandaloneLayout"'
+            . '});};</script></body></html>';
     }
 
     /**
