@@ -43,13 +43,94 @@ class AdminAdminapiClientController extends ModuleAdminController
 
             $data = json_decode((string) $flash, true);
             if (is_array($data) && isset($data['client_id'], $data['secret'])) {
+                $headline = (($data['action'] ?? '') === 'regenerated')
+                    ? 'New secret generated for this API client.'
+                    : 'API client created.';
                 $this->confirmations[] = sprintf(
-                    'API client created. Client ID: <strong>%s</strong><br>'
+                    '%s Client ID: <strong>%s</strong><br>'
                     . 'Secret (shown once only — copy it now): <code>%s</code>',
+                    $headline,
                     htmlspecialchars((string) $data['client_id']),
                     htmlspecialchars((string) $data['secret'])
                 );
             }
+        }
+    }
+
+    /**
+     * Intercept the "regenerate secret" action before PrestaShop's normal
+     * postProcess flow so we can issue our own PRG redirect.
+     */
+    public function postProcess()
+    {
+        if (\Tools::isSubmit('regenerateSecret')) {
+            $this->processRegenerateSecret();
+
+            return; // redirect_after is set; skip the default add/update flow
+        }
+
+        return parent::postProcess();
+    }
+
+    /**
+     * Generate a fresh secret for an existing client, store only its bcrypt
+     * hash, and stash the plaintext in the flash cookie so init() can show it
+     * once on the next request.
+     */
+    public function processRegenerateSecret(): void
+    {
+        $id = (int) \Tools::getValue('id');
+        if ($id <= 0) {
+            $this->errors[] = 'Invalid client.';
+
+            return;
+        }
+
+        $client = new \AdminapiClient($id);
+        if (!\Validate::isLoadedObject($client)) {
+            $this->errors[] = 'Client not found.';
+
+            return;
+        }
+
+        $rawSecret = bin2hex(random_bytes(32));
+
+        $ok = \Db::getInstance()->update('adminapi_client', [
+            'client_secret' => pSQL(password_hash($rawSecret, PASSWORD_BCRYPT)),
+            'date_upd'      => date('Y-m-d H:i:s'),
+        ], 'id = ' . $id);
+
+        if (!$ok) {
+            $this->errors[] = 'Failed to regenerate the secret.';
+
+            return;
+        }
+
+        $this->context->cookie->adminapi_new_secret = json_encode([
+            'client_id' => $client->client_id,
+            'secret'    => $rawSecret,
+            'action'    => 'regenerated',
+        ]);
+        $this->context->cookie->write();
+
+        $this->redirect_after = self::$currentIndex . '&conf=4&token=' . $this->token;
+    }
+
+    /**
+     * Add a "Regenerate secret" button to the toolbar when editing a client.
+     */
+    public function initPageHeaderToolbar()
+    {
+        parent::initPageHeaderToolbar();
+
+        $id = (int) \Tools::getValue('id');
+        if ($this->display === 'edit' && $id > 0) {
+            $this->page_header_toolbar_btn['regenerate_secret'] = [
+                'href' => self::$currentIndex . '&id=' . $id . '&regenerateSecret&token=' . $this->token,
+                'desc' => 'Regenerate secret',
+                'icon' => 'process-icon-refresh',
+                'js'   => "return confirm('Generate a new secret? The current secret will stop working immediately.');",
+            ];
         }
     }
 
@@ -171,6 +252,7 @@ class AdminAdminapiClientController extends ModuleAdminController
             $this->context->cookie->adminapi_new_secret = json_encode([
                 'client_id' => $clientId,
                 'secret'    => $rawSecret,
+                'action'    => 'created',
             ]);
             $this->context->cookie->write();
 
