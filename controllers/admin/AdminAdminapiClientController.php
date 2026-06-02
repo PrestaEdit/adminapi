@@ -94,26 +94,33 @@ class AdminAdminapiClientController extends ModuleAdminController
         }
 
         $rawSecret = bin2hex(random_bytes(32));
+        $client->client_secret = password_hash($rawSecret, PASSWORD_BCRYPT);
 
-        $ok = \Db::getInstance()->update('adminapi_client', [
-            'client_secret' => pSQL(password_hash($rawSecret, PASSWORD_BCRYPT)),
-            'date_upd'      => date('Y-m-d H:i:s'),
-        ], 'id = ' . $id);
-
-        if (!$ok) {
+        if (!$client->update()) {
             $this->errors[] = 'Failed to regenerate the secret.';
 
             return;
         }
 
-        $this->context->cookie->adminapi_new_secret = json_encode([
-            'client_id' => $client->client_id,
-            'secret'    => $rawSecret,
-            'action'    => 'regenerated',
-        ]);
-        $this->context->cookie->write();
+        $this->stashSecretFlash($client->client_id, $rawSecret, 'regenerated');
 
         $this->redirect_after = self::$currentIndex . '&conf=4&token=' . $this->token;
+    }
+
+    /**
+     * Stash a freshly generated plaintext secret in the employee cookie so
+     * init() can surface it once on the next request. The secret cannot be
+     * passed through $this->confirmations because PrestaShop issues the PRG
+     * redirect before the template that would render it.
+     */
+    private function stashSecretFlash(string $clientId, string $rawSecret, string $action): void
+    {
+        $this->context->cookie->adminapi_new_secret = json_encode([
+            'client_id' => $clientId,
+            'secret'    => $rawSecret,
+            'action'    => $action,
+        ]);
+        $this->context->cookie->write();
     }
 
     /**
@@ -203,63 +210,52 @@ class AdminAdminapiClientController extends ModuleAdminController
             }
         }
 
-        if ($this->object && $this->object->id) {
-            // Update — only rehash secret if a new one is provided
-            $data = [
-                'client_id'   => pSQL($clientId),
-                'client_name' => pSQL($clientName),
-                'scopes'      => pSQL((string) json_encode($selectedScopes)),
-                'active'      => $active,
-                'date_upd'    => date('Y-m-d H:i:s'),
-            ];
+        $isUpdate = ($this->object && $this->object->id);
 
+        /** @var \AdminapiClient $client */
+        $client = $isUpdate ? new \AdminapiClient((int) $this->object->id) : new \AdminapiClient();
+
+        $client->client_id   = $clientId;
+        $client->client_name = $clientName;
+        $client->scopes      = (string) json_encode($selectedScopes);
+        $client->active      = $active;
+
+        // On create, auto-generate a secret shown once. On update, keep the
+        // stored hash (loaded with the object) unless a new plaintext secret
+        // was explicitly provided.
+        $rawSecret = null;
+        if ($isUpdate) {
             $raw = \Tools::getValue('client_secret');
             if ($raw !== '' && $raw !== false) {
-                $data['client_secret'] = pSQL(password_hash((string) $raw, PASSWORD_BCRYPT));
+                $client->client_secret = password_hash((string) $raw, PASSWORD_BCRYPT);
             }
-
-            // Issue 3: check return value to catch UNIQUE KEY violations on client_id
-            if (!\Db::getInstance()->update('adminapi_client', $data, 'id = ' . (int) $this->object->id)) {
-                $this->errors[] = 'Failed to update client. The Client ID may already be in use.';
-                return;
-            }
-
-            $conf = 4; // Successful update
         } else {
-            // Create — auto-generate secret
             $rawSecret = bin2hex(random_bytes(32));
-
-            $inserted = \Db::getInstance()->insert('adminapi_client', [
-                'client_id'     => pSQL($clientId),
-                'client_secret' => pSQL(password_hash($rawSecret, PASSWORD_BCRYPT)),
-                'client_name'   => pSQL($clientName),
-                'scopes'        => pSQL((string) json_encode($selectedScopes)),
-                'active'        => $active,
-                'date_add'      => date('Y-m-d H:i:s'),
-                'date_upd'      => date('Y-m-d H:i:s'),
-            ]);
-
-            if (!$inserted) {
-                $this->errors[] = 'Failed to create client. The Client ID may already be in use.';
-                return;
-            }
-
-            // The one-time secret cannot survive the Post/Redirect/Get redirect
-            // via $this->confirmations: PrestaShop redirects (302) before the
-            // template renders, so the array is discarded. Stash it in the
-            // employee cookie instead; init() surfaces it on the next request
-            // and clears it.
-            $this->context->cookie->adminapi_new_secret = json_encode([
-                'client_id' => $clientId,
-                'secret'    => $rawSecret,
-                'action'    => 'created',
-            ]);
-            $this->context->cookie->write();
-
-            $conf = 3; // Successful creation
+            $client->client_secret = password_hash($rawSecret, PASSWORD_BCRYPT);
         }
 
-        $this->redirect_after = self::$currentIndex . '&conf=' . $conf . '&token=' . $this->token;
+        // Validate size/format against the model definition without letting
+        // add()/update() die() inside getFields() on invalid input.
+        $validation = $client->validateFields(false, true);
+        if ($validation !== true) {
+            $this->errors[] = $validation;
+            return;
+        }
+
+        // ObjectModel sets date_add/date_upd automatically; a false return
+        // catches the UNIQUE KEY violation on a duplicate client_id.
+        if (!($isUpdate ? $client->update() : $client->add())) {
+            $this->errors[] = $isUpdate
+                ? 'Failed to update client. The Client ID may already be in use.'
+                : 'Failed to create client. The Client ID may already be in use.';
+            return;
+        }
+
+        if ($rawSecret !== null) {
+            $this->stashSecretFlash($clientId, $rawSecret, 'created');
+        }
+
+        $this->redirect_after = self::$currentIndex . '&conf=' . ($isUpdate ? 4 : 3) . '&token=' . $this->token;
     }
 
     private function renderScopesCheckboxes(array $allScopes, array $selectedScopes): string
