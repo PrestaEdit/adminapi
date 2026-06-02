@@ -60,6 +60,15 @@ class Adminapi extends Module
                 'keywords'   => [],
                 'params'     => $base,
             ],
+            // Self-introspection of the authenticated client. Must be declared
+            // before the generic {resource}/{id} rules: 'infos' is non-numeric
+            // so it would otherwise match nothing and 404.
+            'adminapi-client-infos' => [
+                'controller' => 'api',
+                'rule'       => 'admin-api/api-client/infos',
+                'keywords'   => [],
+                'params'     => $base,
+            ],
             'adminapi-sub-item' => [
                 'controller' => 'api',
                 'rule'       => 'admin-api/{resource}/{id}/{subresource}/{subid}',
