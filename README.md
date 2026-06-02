@@ -236,8 +236,8 @@ GET /admin-api/openapi.json
 A browsable Swagger UI is available in the **back office**, behind the employee login — mirroring the official admin context (which enables `swagger_ui` only for authenticated admins):
 
 ```
-Back office → Advanced Parameters → Admin API → "API documentation" button
-(controller: AdminAdminAPI, ?apidoc=1)
+Back office → Advanced Parameters → Admin API → "open the API documentation"
+info callout link (controller: AdminAdminAPI, ?apidoc=1)
 ```
 
 The page bundles the Swagger UI assets locally (`views/swagger-ui/`, no external CDN) and inlines the spec, so it needs no API token to render. Use the **Authorize** button (client credentials → `client_id` / `client_secret`) then **Try it out** to call endpoints live.

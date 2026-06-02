@@ -89,21 +89,16 @@ class AdminAdminAPIController extends ModuleAdminController
             exit;
         }
 
-        parent::initContent();
-    }
-
-    /** Add an "API documentation" button on the client list toolbar. */
-    public function initPageHeaderToolbar()
-    {
-        parent::initPageHeaderToolbar();
-
+        // Info callout (rendered as an alert-info block above the list) linking
+        // to the interactive Swagger UI — shown on the list, not the forms.
         if (!in_array($this->display, ['edit', 'add', 'view'], true)) {
-            $this->page_header_toolbar_btn['apidoc'] = [
-                'href' => self::$currentIndex . '&apidoc=1&token=' . $this->token,
-                'desc' => 'API documentation',
-                'icon' => 'process-icon-book',
-            ];
+            $url = self::$currentIndex . '&apidoc=1&token=' . $this->token;
+            $this->informations[] = '<i class="icon-book"></i> '
+                . 'Interactive API documentation (Swagger UI): '
+                . '<a href="' . $url . '"><strong>open the API documentation</strong></a>.';
         }
+
+        parent::initContent();
     }
 
     private function renderSwaggerPage(string $specJson, string $assets): string
