@@ -86,8 +86,51 @@ class OpenApiGenerator
             }
         }
 
+        // Special self-introspection endpoint (not a CRUD resource route).
+        $paths['/api-client/infos']['get'] = $this->clientInfosOperation();
+
         ksort($paths);
         return $paths;
+    }
+
+    /**
+     * GET /api-client/infos — identity and scopes of the authenticated client.
+     * Available to any valid token, so no specific scope is required.
+     *
+     * @return array<string,mixed>
+     */
+    private function clientInfosOperation(): array
+    {
+        return [
+            'operationId' => 'getApiClientInfos',
+            'tags'        => ['ApiClient'],
+            'summary'     => 'Get information about the authenticated API client',
+            'security'    => [['oauth2' => []]],
+            'responses'   => [
+                '200' => [
+                    'description' => 'OK',
+                    'content'     => [
+                        'application/json' => [
+                            'schema' => [
+                                'type'       => 'object',
+                                'properties' => [
+                                    'apiClientId' => ['type' => 'integer'],
+                                    'clientId'    => ['type' => 'string'],
+                                    'clientName'  => ['type' => 'string'],
+                                    'scopes'      => ['type' => 'array', 'items' => ['type' => 'string']],
+                                    'tokenScopes' => ['type' => 'array', 'items' => ['type' => 'string']],
+                                    'active'      => ['type' => 'boolean'],
+                                    'dateAdd'     => ['type' => 'string'],
+                                    'dateUpd'     => ['type' => 'string'],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                '401' => ['description' => 'Missing or invalid access token'],
+                '404' => ['description' => 'Authenticated client not found'],
+            ],
+        ];
     }
 
     /**

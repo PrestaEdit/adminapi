@@ -78,6 +78,26 @@ class OpenApiGeneratorTest extends TestCase
         $this->assertContains('sortOrder', $names);
     }
 
+    public function testApiClientInfosPath(): void
+    {
+        $paths = $this->spec()['paths'];
+
+        $this->assertArrayHasKey('/api-client/infos', $paths);
+        $this->assertArrayHasKey('get', $paths['/api-client/infos']);
+
+        $get = $paths['/api-client/infos']['get'];
+        $this->assertSame('getApiClientInfos', $get['operationId']);
+        // Any valid token may call it — secured but no specific scope required.
+        $this->assertSame([['oauth2' => []]], $get['security']);
+        $this->assertArrayHasKey('200', $get['responses']);
+        $this->assertArrayHasKey('401', $get['responses']);
+
+        $props = $get['responses']['200']['content']['application/json']['schema']['properties'];
+        $this->assertArrayHasKey('clientId', $props);
+        $this->assertArrayHasKey('scopes', $props);
+        $this->assertArrayHasKey('tokenScopes', $props);
+    }
+
     public function testModuleIsReadOnly(): void
     {
         $paths = $this->spec()['paths'];
