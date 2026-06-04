@@ -28,7 +28,7 @@ jobs:
         # Guard against publishing a ZIP whose declared $this->version differs from
         # the git tag — a mismatch ships the wrong version number to PrestaShop.
         run: |
-          DECLARED=$(grep -oP "\$this->version\s*=\s*'\K[^']+" adminapi.php)
+          DECLARED=$(awk -F"'" '/\$this->version[[:space:]]*=/{print $2; exit}' adminapi.php)
           if [ "$DECLARED" != "${{ steps.version.outputs.VERSION }}" ]; then
             echo "::error::Tag is v${{ steps.version.outputs.VERSION }} but adminapi.php declares $DECLARED"
             exit 1
